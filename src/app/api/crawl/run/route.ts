@@ -9,7 +9,7 @@ function authorize(request: Request) {
   return request.headers.get("authorization") === `Bearer ${secret}`;
 }
 
-export async function POST(request: Request) {
+async function handleCrawlRun(request: Request) {
   if (!authorize(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -22,4 +22,12 @@ export async function POST(request: Request) {
         ? "CRON_SECRET is not hardened; set it before deployment."
         : null,
   });
+}
+
+export async function GET(request: Request) {
+  return handleCrawlRun(request);
+}
+
+export async function POST(request: Request) {
+  return handleCrawlRun(request);
 }

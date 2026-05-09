@@ -20,16 +20,45 @@ npm run dev
 
 The app runs in demo mode without Supabase or Gemini keys. Add `.env.local` from `.env.example` to enable real Supabase/Gemini integrations.
 
+## Deployment Readiness
+
+Before the first production deployment:
+
+1. Create a new Supabase project for the OtakuHub beta.
+2. Apply `supabase/migrations/202605080001_initial_schema.sql`.
+3. Apply `supabase/seed.sql` for portfolio demo data.
+4. Configure Google OAuth in Supabase Auth.
+5. Add the required Vercel environment variables.
+6. Deploy `main` to Vercel and run a production smoke test.
+
+Required Vercel environment variables:
+
+- `NEXT_PUBLIC_SITE_URL`
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `GEMINI_API_KEY`
+- `GEMINI_MODEL`
+- `GEMINI_FALLBACK_MODEL`
+- `CRON_SECRET`
+
 ## Supabase
 
 Apply `supabase/migrations/202605080001_initial_schema.sql` in the Supabase SQL editor or through the Supabase CLI after linking a project. The migration creates RLS-enabled tables for profiles, franchises, events, user saves, collections, crawl sources, crawled posts, suggestions, reminders, and crawl run logs.
 
+Google OAuth setup:
+
+- Add the Google OAuth redirect URI from Supabase: `https://<project-ref>.supabase.co/auth/v1/callback`.
+- Add Supabase Auth redirect URLs for local and production callbacks:
+  - `http://localhost:3000/auth/callback`
+  - `https://<vercel-production-domain>/auth/callback`
+
 ## Cron
 
-Configure Vercel Cron to POST `/api/crawl/run` with:
+`vercel.json` configures a daily Vercel Cron job for `GET /api/crawl/run` at `0 18 * * *` UTC. Vercel invokes Cron routes only on production deployments and sends the protected request with:
 
 ```http
 Authorization: Bearer $CRON_SECRET
 ```
 
-Without configured crawl sources or credentials, the endpoint uses representative demo posts so the `crawl -> AI -> suggestion` flow is visible during portfolio demos.
+The Discover screen keeps using `POST /api/crawl/run` for manual demo runs. Without configured crawl sources or credentials, the endpoint uses representative demo posts so the `crawl -> AI -> suggestion` flow is visible during portfolio demos.

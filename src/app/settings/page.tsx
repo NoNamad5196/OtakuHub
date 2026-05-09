@@ -13,7 +13,7 @@ const apiRows = [
   ["GET/PATCH", "/api/suggestions", "AI 제안 조회/상태 변경"],
   ["POST", "/api/suggestions/:id/accept", "제안 확정"],
   ["POST", "/api/suggestions/:id/ignore", "제안 무시"],
-  ["POST", "/api/crawl/run", "크롤러 실행"],
+  ["GET/POST", "/api/crawl/run", "크롤러 실행"],
 ];
 
 export default function SettingsPage() {
@@ -78,7 +78,7 @@ export default function SettingsPage() {
               {cronHardened ? "protected" : "needs secret"}
             </Badge>
             <p className="text-sm text-muted-foreground">
-              Vercel Cron은 `Authorization: Bearer $CRON_SECRET` 헤더로 `/api/crawl/run`을 호출합니다.
+              Vercel Cron은 GET으로 `/api/crawl/run`을 호출하고 `Authorization: Bearer $CRON_SECRET` 헤더로 보호합니다. Discover 수동 실행은 POST를 사용합니다.
             </p>
           </CardContent>
         </Card>
