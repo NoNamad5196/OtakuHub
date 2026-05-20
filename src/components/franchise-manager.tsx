@@ -11,7 +11,7 @@ import { categoryLabels } from "@/lib/event-labels";
 import type { Franchise, FranchiseCategory } from "@/lib/types";
 import { franchiseCategories } from "@/lib/types";
 
-const colorChoices = ["#38bdf8", "#f472b6", "#34d399", "#facc15", "#a78bfa"];
+const colorChoices = ["#0EA5E9", "#2563EB", "#F59E0B", "#EC4899", "#8B5CF6", "#34D399"];
 
 export function FranchiseManager({ initialFranchises }: { initialFranchises: Franchise[] }) {
   const [franchises, setFranchises] = useState(initialFranchises);
@@ -30,11 +30,6 @@ export function FranchiseManager({ initialFranchises }: { initialFranchises: Fra
         colorCode: String(formData.get("colorCode")),
       }),
     });
-    if (response.status === 401) {
-      setError("로그인이 필요합니다.");
-      setPending(false);
-      return;
-    }
     if (!response.ok) {
       setError("등록에 실패했습니다.");
       setPending(false);
@@ -48,11 +43,11 @@ export function FranchiseManager({ initialFranchises }: { initialFranchises: Fra
   return (
     <div className="grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
       <Card>
-        <CardContent className="p-5">
+        <CardContent>
           <form action={submit} className="space-y-4">
             <div className="grid gap-2">
               <Label htmlFor="name">프랜차이즈명</Label>
-              <Input id="name" name="name" placeholder="예: 니케, 원신, 최애 그룹" required />
+              <Input id="name" name="name" placeholder="원신, 블루 아카이브, 최애 그룹" required />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="category">카테고리</Label>
@@ -82,7 +77,7 @@ export function FranchiseManager({ initialFranchises }: { initialFranchises: Fra
               <Plus className="h-4 w-4" />
               {pending ? "등록 중" : "관심 프랜차이즈 등록"}
             </Button>
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {error && <p className="text-sm text-[var(--danger-text)]">{error}</p>}
           </form>
         </CardContent>
       </Card>
@@ -90,7 +85,7 @@ export function FranchiseManager({ initialFranchises }: { initialFranchises: Fra
       <div className="grid gap-4 md:grid-cols-2">
         {franchises.map((franchise) => (
           <Card key={franchise.id}>
-            <CardContent className="p-5">
+            <CardContent>
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">

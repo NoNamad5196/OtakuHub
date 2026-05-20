@@ -33,11 +33,6 @@ export function EventCreator({ franchises }: { franchises: Franchise[] }) {
         remindDays: [3, 7],
       }),
     });
-    if (response.status === 401) {
-      setError("로그인이 필요합니다.");
-      setPending(false);
-      return;
-    }
     if (!response.ok) {
       setError("일정 추가에 실패했습니다.");
       setPending(false);
@@ -105,7 +100,7 @@ export function EventCreator({ franchises }: { franchises: Franchise[] }) {
         </Button>
         <Button disabled={pending}>{pending ? "추가 중" : "추가"}</Button>
       </div>
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className="text-sm text-[var(--danger-text)]">{error}</p>}
     </form>
   );
 }

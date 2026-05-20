@@ -1,13 +1,13 @@
-import type { EventType, FranchiseCategory } from "@/lib/types";
+import type { CrawlSourceType, EventType, FranchiseCategory } from "@/lib/types";
 
 export const eventTypeLabels: Record<EventType, string> = {
   goods_release: "굿즈 발매",
   preorder: "예약 시작",
   cafe: "콜라보 카페",
   popup: "팝업",
-  concert: "공연/참가",
+  concert: "공연/라이브",
   broadcast: "방송",
-  birthday: "생일 카페",
+  birthday: "생일 이벤트",
   other: "기타",
 };
 
@@ -19,12 +19,18 @@ export const categoryLabels: Record<FranchiseCategory, string> = {
   other: "기타",
 };
 
+export const crawlSourceTypeLabels: Record<CrawlSourceType, string> = {
+  naver_lounge: "Naver Lounge",
+  dc: "DC",
+  official: "Official",
+};
+
 export function normalizeEventType(input: string | null | undefined): EventType {
   const value = (input ?? "").toLowerCase();
   if (value.includes("카페") || value.includes("cafe")) return "cafe";
   if (value.includes("팝업") || value.includes("popup")) return "popup";
   if (value.includes("예약") || value.includes("preorder")) return "preorder";
-  if (value.includes("콘서트") || value.includes("공연") || value.includes("concert")) {
+  if (value.includes("콘서트") || value.includes("공연") || value.includes("라이브") || value.includes("concert")) {
     return "concert";
   }
   if (value.includes("방송") || value.includes("stream") || value.includes("broadcast")) {
