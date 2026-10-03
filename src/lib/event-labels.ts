@@ -20,9 +20,9 @@ export const categoryLabels: Record<FranchiseCategory, string> = {
 };
 
 export const crawlSourceTypeLabels: Record<CrawlSourceType, string> = {
-  naver_lounge: "Naver Lounge",
-  dc: "DC",
-  official: "Official",
+  naver_lounge: "네이버 라운지",
+  dc: "디시인사이드",
+  official: "공식 사이트",
 };
 
 export function normalizeEventType(input: string | null | undefined): EventType {

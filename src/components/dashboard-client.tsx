@@ -260,9 +260,9 @@ export function PageTop({
     <header className="flex flex-col gap-3 px-4 pb-4 pt-16 sm:px-7 sm:pt-6 lg:flex-row lg:items-start lg:justify-between">
       <div className="min-w-0">
         <h1 className="text-xl font-bold tracking-tight">{title}</h1>
-        <p className="mt-1 truncate text-xs text-[var(--text-3)]">{description}</p>
+        <p className="mt-1 max-w-3xl text-xs leading-5 text-[var(--text-3)]">{description}</p>
       </div>
-      {action && <div className="shrink-0">{action}</div>}
+      {action && <div className="w-full shrink-0 lg:w-auto">{action}</div>}
     </header>
   );
 }

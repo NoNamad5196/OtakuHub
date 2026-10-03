@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   description: "서브컬처 일정 수집, AI 검수, 캘린더, 굿즈 관리를 한곳에서 다루는 베타 MVP",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function RootLayout({
   children,
 }: Readonly<{

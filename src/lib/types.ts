@@ -117,6 +117,38 @@ export type CrawlRun = {
   finishedAt: string;
 };
 
+export const agentAppIds = ["otakuhub", "sipsungjang", "gachaguard"] as const;
+export type AgentAppId = (typeof agentAppIds)[number];
+
+export const agentActivitySignals = ["game_started", "game_stopped", "manual_sync"] as const;
+export type AgentActivitySignal = (typeof agentActivitySignals)[number];
+
+export type AgentActivityRecord = {
+  id: string;
+  appId: AgentAppId;
+  signal: AgentActivitySignal;
+  franchiseId?: string | null;
+  franchiseName?: string | null;
+  externalGameId?: string | null;
+  occurredAt: string;
+  lastAccessAt?: string | null;
+  note?: string | null;
+  createdAt: string;
+};
+
+export type SpendingAlertRecord = {
+  id: string;
+  appId: AgentAppId;
+  franchiseId?: string | null;
+  franchiseName?: string | null;
+  trigger: "budget_exceeded" | "impulse_risk" | "manual_check";
+  budgetLimit: number;
+  projectedSpend: number;
+  currency: string;
+  occurredAt: string;
+  createdAt: string;
+};
+
 export type DashboardData = {
   franchises: Franchise[];
   events: OtakuEvent[];

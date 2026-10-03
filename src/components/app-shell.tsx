@@ -25,7 +25,7 @@ const navItems = [
   { href: "/dashboard", label: "대시보드", icon: LayoutDashboard },
   { href: "/discover", label: "탐색", icon: Compass },
   { href: "/calendar", label: "캘린더", icon: CalendarDays },
-  { href: "/collections", label: "Collections", icon: Package },
+  { href: "/collections", label: "컬렉션", icon: Package },
   { href: "/settings", label: "설정", icon: Settings },
 ] as const;
 

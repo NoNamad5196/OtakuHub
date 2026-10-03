@@ -8,23 +8,42 @@ import {
   demoSuggestions,
 } from "@/lib/demo-data";
 import type {
+  AgentActivityRecord,
+  AgentActivitySignal,
+  AgentAppId,
   CollectionItem,
   CrawlRun,
   DashboardData,
   EventSuggestion,
   Franchise,
   OtakuEvent,
+  SpendingAlertRecord,
 } from "@/lib/types";
 
-const store = {
-  franchises: structuredClone(demoFranchises),
-  events: structuredClone(demoEvents),
-  collections: structuredClone(demoCollections),
-  sources: structuredClone(demoSources),
-  suggestions: structuredClone(demoSuggestions),
-  reminders: structuredClone(demoReminders),
-  crawlRuns: structuredClone(demoCrawlRuns),
+type DemoStore = DashboardData & {
+  agentActivities: AgentActivityRecord[];
+  spendingAlerts: SpendingAlertRecord[];
 };
+
+const globalDemoStore = globalThis as typeof globalThis & {
+  __otakuhubDemoStore?: DemoStore;
+};
+
+function createDemoStore(): DemoStore {
+  return {
+    franchises: structuredClone(demoFranchises),
+    events: structuredClone(demoEvents),
+    collections: structuredClone(demoCollections),
+    sources: structuredClone(demoSources),
+    suggestions: structuredClone(demoSuggestions),
+    reminders: structuredClone(demoReminders),
+    crawlRuns: structuredClone(demoCrawlRuns),
+    agentActivities: [],
+    spendingAlerts: [],
+  };
+}
+
+const store = (globalDemoStore.__otakuhubDemoStore ??= createDemoStore());
 
 function id(prefix: string) {
   return `${prefix}-${crypto.randomUUID()}`;
@@ -145,4 +164,44 @@ export function appendCrawlRun(run: Omit<CrawlRun, "id">) {
   };
   store.crawlRuns.unshift(created);
   return structuredClone(created);
+}
+
+export function recordAgentActivity(input: {
+  appId: AgentAppId;
+  signal: AgentActivitySignal;
+  franchiseId?: string | null;
+  franchiseName?: string | null;
+  externalGameId?: string | null;
+  occurredAt?: string;
+  note?: string | null;
+}) {
+  const occurredAt = input.occurredAt ?? new Date().toISOString();
+  const record: AgentActivityRecord = {
+    id: id("agent-activity"),
+    appId: input.appId,
+    signal: input.signal,
+    franchiseId: input.franchiseId ?? null,
+    franchiseName: input.franchiseName ?? null,
+    externalGameId: input.externalGameId ?? null,
+    occurredAt,
+    lastAccessAt: input.signal === "game_started" || input.signal === "manual_sync" ? occurredAt : null,
+    note: input.note ?? null,
+    createdAt: new Date().toISOString(),
+  };
+  store.agentActivities.unshift(record);
+  return structuredClone(record);
+}
+
+export function listAgentActivities() {
+  return structuredClone(store.agentActivities);
+}
+
+export function recordSpendingAlert(input: Omit<SpendingAlertRecord, "id" | "createdAt">) {
+  const record: SpendingAlertRecord = {
+    ...input,
+    id: id("spending-alert"),
+    createdAt: new Date().toISOString(),
+  };
+  store.spendingAlerts.unshift(record);
+  return structuredClone(record);
 }

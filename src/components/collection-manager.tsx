@@ -47,6 +47,7 @@ export function CollectionManager({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const franchiseById = new Map(franchises.map((item) => [item.id, item]));
+  const eventById = new Map(events.map((item) => [item.id, item]));
 
   async function submit(formData: FormData) {
     setPending(true);
@@ -111,7 +112,7 @@ export function CollectionManager({
   return (
     <div className="min-h-full bg-background">
       <PageTop
-        title="Collections"
+        title="컬렉션"
         description={`굿즈 ${items.length}개 · 위시리스트 ${counts.wishlist}개 · 구매 완료 ${counts.purchased}개`}
         action={
           <Button onClick={() => setShowAdd(true)}>
@@ -164,13 +165,13 @@ export function CollectionManager({
         </section>
 
         <section className="mt-4 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex w-fit rounded-lg border bg-card p-1">
+          <div className="flex max-w-full overflow-x-auto rounded-lg border bg-card p-1 xl:w-fit">
             {statusTabs.map((tab) => (
               <button
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-bold transition ${
+                className={`flex shrink-0 items-center gap-2 rounded-md px-3 py-1.5 text-sm font-bold transition ${
                   activeTab === tab.id ? "bg-primary text-white" : "text-[var(--text-2)] hover:bg-muted"
                 }`}
               >
@@ -187,19 +188,19 @@ export function CollectionManager({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-3)]" />
               <Input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="굿즈명, 게임 검색..."
-                className="w-56 pl-8"
+                className="w-full pl-8 sm:w-56"
               />
             </div>
             <select
               value={franchise}
               onChange={(event) => setFranchise(event.target.value)}
-              className="h-10 rounded-md border bg-input px-3 text-sm outline-none"
+              className="h-10 w-full rounded-md border bg-input px-3 text-sm outline-none sm:w-auto"
             >
               <option value="all">전체 게임</option>
               {franchises.map((item) => (
@@ -224,6 +225,7 @@ export function CollectionManager({
             <CollectionTable
               items={filtered}
               franchiseById={franchiseById}
+              eventById={eventById}
               onReset={() => {
                 setSearch("");
                 setFranchise("all");
@@ -233,7 +235,7 @@ export function CollectionManager({
               hasFilter={Boolean(search || franchise !== "all" || activeTab !== "all")}
             />
           ) : (
-            <CollectionGrid items={filtered} franchiseById={franchiseById} />
+            <CollectionGrid items={filtered} franchiseById={franchiseById} eventById={eventById} />
           )}
         </section>
       </div>
@@ -338,12 +340,14 @@ function IconButton({
 function CollectionTable({
   items,
   franchiseById,
+  eventById,
   onReset,
   onAdd,
   hasFilter,
 }: {
   items: CollectionItem[];
   franchiseById: Map<string, Franchise>;
+  eventById: Map<string, OtakuEvent>;
   onReset: () => void;
   onAdd: () => void;
   hasFilter: boolean;
@@ -363,6 +367,7 @@ function CollectionTable({
       ) : (
         items.map((item) => {
           const franchise = franchiseById.get(item.franchiseId ?? "");
+          const linkedEvent = eventById.get(item.eventId ?? "");
           return (
             <div
               key={item.id}
@@ -384,7 +389,7 @@ function CollectionTable({
                   <p className="truncate text-xs text-[var(--text-3)]">{franchise?.name ?? "미분류"}{item.memo ? ` · ${item.memo}` : ""}</p>
                 </div>
               </div>
-              <div className="truncate text-xs text-[var(--text-2)]">{item.eventId ?? "없음"}</div>
+              <div className="truncate text-xs text-[var(--text-2)]">{linkedEvent?.title ?? "연결 없음"}</div>
               <div className="text-sm font-bold">{formatKRW(item.price)}</div>
               <StatusBadge status={statusOf(item)} />
               <div className="flex justify-end">
@@ -408,14 +413,17 @@ function CollectionTable({
 function CollectionGrid({
   items,
   franchiseById,
+  eventById,
 }: {
   items: CollectionItem[];
   franchiseById: Map<string, Franchise>;
+  eventById: Map<string, OtakuEvent>;
 }) {
   return (
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
       {items.map((item) => {
         const franchise = franchiseById.get(item.franchiseId ?? "");
+        const linkedEvent = eventById.get(item.eventId ?? "");
         return (
           <article key={item.id} className="panel overflow-hidden">
             <div
@@ -430,6 +438,7 @@ function CollectionGrid({
                 <StatusBadge status={statusOf(item)} compact />
               </div>
               <p className="text-xs text-[var(--text-3)]">{franchise?.name ?? "미분류"}</p>
+              {linkedEvent && <p className="mt-1 truncate text-xs text-[var(--text-3)]">{linkedEvent.title}</p>}
               <div className="mt-3 flex items-center justify-between">
                 <span className="font-bold">{formatKRW(item.price)}</span>
                 <span className="text-xs text-[var(--text-3)]">{item.boughtAt ?? "미구매"}</span>

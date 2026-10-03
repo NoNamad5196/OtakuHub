@@ -18,6 +18,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { PageTop } from "@/components/dashboard-client";
@@ -35,6 +36,11 @@ type EditDraft = {
   startDate: string;
   endDate: string;
   location: string;
+};
+
+type Notice = {
+  message: string;
+  href?: string;
 };
 
 export function SuggestionReview({
@@ -55,6 +61,7 @@ export function SuggestionReview({
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<Notice | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, EditDraft>>({});
   const [pipeStep, setPipeStep] = useState(0);
@@ -72,6 +79,7 @@ export function SuggestionReview({
   async function review(id: string, action: "accept" | "ignore") {
     setPendingId(id);
     setError(null);
+    setNotice(null);
     const response = await fetch(`/api/suggestions/${id}/${action}`, { method: "POST" });
     if (response.ok) {
       setSuggestions((current) =>
@@ -80,6 +88,12 @@ export function SuggestionReview({
             ? { ...suggestion, status: action === "accept" ? "accepted" : "ignored" }
             : suggestion,
         ),
+      );
+      setPipeStep(action === "accept" ? 5 : pipeStep);
+      setNotice(
+        action === "accept"
+          ? { message: "승인한 일정이 캘린더에 추가되었습니다.", href: "/calendar" }
+          : { message: "제안을 거절했습니다. 캘린더에는 반영되지 않습니다." },
       );
       router.refresh();
     } else {
@@ -110,6 +124,7 @@ export function SuggestionReview({
     if (!draft) return;
     setPendingId(suggestion.id);
     setError(null);
+    setNotice(null);
     const createResponse = await fetch("/api/events", {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -156,6 +171,8 @@ export function SuggestionReview({
     );
     setEditingId(null);
     setPendingId(null);
+    setPipeStep(5);
+    setNotice({ message: "수정한 일정이 캘린더에 추가되었습니다.", href: "/calendar" });
     router.refresh();
   }
 
@@ -163,6 +180,7 @@ export function SuggestionReview({
     if (running) return;
     setRunning(true);
     setError(null);
+    setNotice(null);
     setPipeStep(0);
     setPipeCounts({ posts: 0, extracted: 0 });
     window.setTimeout(() => setPipeStep(1), 150);
@@ -184,6 +202,10 @@ export function SuggestionReview({
       };
       setPipeCounts({ posts: payload.data.postsFound, extracted: payload.data.suggestionsCreated });
       setPipeStep(4);
+      setTab("suggestions");
+      setNotice({
+        message: `크롤링 완료: 게시글 ${payload.data.postsFound}건에서 AI 제안 ${payload.data.suggestionsCreated}건을 만들었습니다.`,
+      });
       setSuggestions((current) => [...payload.data.suggestions, ...current]);
       setCrawlRuns((current) => [
         {
@@ -222,6 +244,7 @@ export function SuggestionReview({
             {error}
           </div>
         )}
+        {notice && <NoticePanel notice={notice} />}
 
         <PipelinePanel
           running={running}
@@ -231,13 +254,13 @@ export function SuggestionReview({
           pending={pendingSuggestions.length}
         />
 
-        <div className="mt-4 flex w-fit rounded-lg border bg-card p-1">
+        <div className="mt-4 flex max-w-full overflow-x-auto rounded-lg border bg-card p-1 sm:w-fit">
           {tabs.map((item) => (
             <button
               key={item.id}
               type="button"
               onClick={() => setTab(item.id)}
-              className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-bold transition ${
+              className={`flex shrink-0 items-center gap-2 rounded-md px-3 py-1.5 text-sm font-bold transition ${
                 tab === item.id ? "bg-primary text-white" : "text-[var(--text-2)] hover:bg-muted"
               }`}
             >
@@ -323,6 +346,23 @@ export function SuggestionReview({
           )}
         </section>
       </div>
+    </div>
+  );
+}
+
+function NoticePanel({ notice }: { notice: Notice }) {
+  return (
+    <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-[color-mix(in_oklch,var(--success)_30%,var(--border))] bg-[var(--success-bg)] px-4 py-3 text-sm font-medium text-[var(--success-text)]">
+      <CheckCircle2 className="h-4 w-4 shrink-0" />
+      <span className="min-w-0 flex-1">{notice.message}</span>
+      {notice.href && (
+        <Button variant="outline" size="sm" asChild>
+          <Link href={notice.href}>
+            캘린더 보기
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </Button>
+      )}
     </div>
   );
 }

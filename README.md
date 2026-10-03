@@ -10,6 +10,7 @@ OtakuHub is a portfolio-plus-beta MVP for managing fandom schedules: crawl publi
 - FullCalendar, dayjs
 - Axios/Cheerio crawlers plus a Playwright official-site adapter
 - Gemini Developer API for structured event extraction
+- Agent-ready server API endpoints for future OtakuS Agent integration
 
 ## Run Locally
 
@@ -62,3 +63,14 @@ Authorization: Bearer $CRON_SECRET
 ```
 
 The Discover screen keeps using `POST /api/crawl/run` for manual demo runs. Without configured crawl sources or credentials, the endpoint uses representative demo posts so the `crawl -> AI -> suggestion` flow is visible during portfolio demos.
+
+## OtakuS Agent Integration Prep
+
+OtakuHub stays usable as a standalone web app. Future OtakuS Agent support is prepared through server APIs instead of shared databases:
+
+- `GET /api/integrations/agent/config` returns capability and endpoint metadata.
+- `GET /api/integrations/agent/events` returns approved upcoming OtakuHub events.
+- `POST /api/integrations/agent/activity` accepts user-approved game activity signals from SipSungJang.
+- `POST /api/integrations/agent/spending-alert` accepts GachaGuard budget or impulse-spend warnings.
+
+Set `OTAKUS_AGENT_API_TOKEN` in production to require a bearer token. Demo mode leaves the endpoints open locally. These endpoints do not accept full process lists, window titles, keystrokes, or screenshots.

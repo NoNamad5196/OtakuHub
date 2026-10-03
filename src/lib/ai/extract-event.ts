@@ -105,8 +105,8 @@ export function heuristicExtractEvent(post: ExtractablePost): ExtractedEvent {
   const text = `${post.title}\n${post.content}`;
   const inferred = inferDatesFromText(text) ?? todayIso();
   const warnings = inferDatesFromText(text)
-    ? ["AI key not configured; used local heuristic extraction."]
-    : ["AI key not configured; no date found, used today's date as a placeholder."];
+    ? ["AI 키가 없어 로컬 추정으로 일정을 만들었습니다."]
+    : ["AI 키가 없고 날짜를 찾지 못해 오늘 날짜를 임시로 사용했습니다."];
   const eventType: EventType = normalizeEventType(text);
 
   return {
@@ -140,8 +140,8 @@ export async function extractEventFromPost(post: ExtractablePost): Promise<Extra
         confidence: Math.min(extracted.confidence, 0.42),
         warnings: [
           ...extracted.warnings,
-          `Gemini extraction failed: ${primaryMessage}`,
-          `Fallback model failed: ${fallbackMessage}`,
+          `Gemini 추출 실패: ${primaryMessage}`,
+          `대체 모델 실패: ${fallbackMessage}`,
         ],
       };
     }

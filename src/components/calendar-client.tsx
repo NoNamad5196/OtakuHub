@@ -163,29 +163,31 @@ export function CalendarClient({
         </div>
 
         <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-          <div className="panel overflow-hidden p-3">
-            <FullCalendar
-              ref={calendarRef}
-              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-              initialView="dayGridMonth"
-              height="auto"
-              headerToolbar={{
-                left: "",
-                center: "title",
-                right: "",
-              }}
-              dateClick={(arg: DateClickArg) => setSelectedDate(arg.dateStr)}
-              events={filteredEvents.map((event) => {
-                const franchise = franchiseById.get(event.franchiseId);
-                return {
-                  id: event.id,
-                  title: event.title,
-                  start: event.startDate,
-                  end: event.endDate ?? undefined,
-                  color: franchise?.colorCode ?? "#0EA5E9",
-                };
-              })}
-            />
+          <div className="panel overflow-x-auto p-3">
+            <div className="min-w-[680px] lg:min-w-0">
+              <FullCalendar
+                ref={calendarRef}
+                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                initialView="dayGridMonth"
+                height="auto"
+                headerToolbar={{
+                  left: "",
+                  center: "title",
+                  right: "",
+                }}
+                dateClick={(arg: DateClickArg) => setSelectedDate(arg.dateStr)}
+                events={filteredEvents.map((event) => {
+                  const franchise = franchiseById.get(event.franchiseId);
+                  return {
+                    id: event.id,
+                    title: event.title,
+                    start: event.startDate,
+                    end: event.endDate ?? undefined,
+                    color: franchise?.colorCode ?? "#0EA5E9",
+                  };
+                })}
+              />
+            </div>
           </div>
 
           <aside className="space-y-4">
