@@ -74,6 +74,8 @@ export async function authorizeAgentRequest(request: Request): Promise<{ uid: st
     new URL(request.url).searchParams.get("userId") ||
     new URL(request.url).searchParams.get("uid");
 
+  if (requestedUid !== null && !/^[A-Za-z0-9_-]{1,128}$/.test(requestedUid)) return null;
+
   if (hasFirebaseEnv() || hasFirebaseAdminEnv()) {
     if (!token) return null;
     const tokenHash = hashAgentToken(token);
