@@ -1,4 +1,8 @@
+import { createHash } from "node:crypto";
+import { Timestamp } from "firebase-admin/firestore";
 import { z } from "zod";
+import { getAdminDb } from "@/lib/firebase/admin";
+import { hasFirebaseAdminEnv, hasFirebaseEnv } from "@/lib/firebase/env";
 import { daysUntil } from "@/lib/date-utils";
 import {
   agentActivitySignals,
@@ -46,13 +50,105 @@ export type SpendingAlertInput = z.infer<typeof spendingAlertSchema>;
 
 const eventTypesForAgent: EventType[] = ["goods_release", "preorder", "cafe", "popup", "broadcast"];
 
-export function isAgentAuthorized(request: Request) {
-  const token = process.env.OTAKUS_AGENT_API_TOKEN;
-  if (!token) return true;
-  return (
-    request.headers.get("authorization") === `Bearer ${token}` ||
-    request.headers.get("x-otakus-agent-token") === token
-  );
+export function hashAgentToken(token: string) {
+  return createHash("sha256").update(token.trim()).digest("hex");
+}
+
+export function extractBearerToken(request: Request): string | null {
+  const authHeader = request.headers.get("authorization");
+  if (authHeader && authHeader.toLowerCase().startsWith("bearer ")) {
+    return authHeader.slice(7).trim();
+  }
+  const customHeader = request.headers.get("x-otakus-agent-token");
+  if (customHeader) {
+    return customHeader.trim();
+  }
+  return null;
+}
+
+export async function authorizeAgentRequest(request: Request): Promise<{ uid: string } | null> {
+  const token = extractBearerToken(request);
+  const requestedUid =
+    request.headers.get("x-otakus-user-id") ||
+    request.headers.get("x-user-id") ||
+    new URL(request.url).searchParams.get("userId") ||
+    new URL(request.url).searchParams.get("uid");
+
+  if (hasFirebaseEnv() || hasFirebaseAdminEnv()) {
+    if (!token) return null;
+    const tokenHash = hashAgentToken(token);
+    const db = getAdminDb();
+    if (requestedUid) {
+      const userDoc = await db.doc(`users/${requestedUid}`).get();
+      if (userDoc.exists && userDoc.get("agentTokenHash") === tokenHash) {
+        return { uid: requestedUid };
+      }
+      return null;
+    }
+
+    const snap = await db.collection("users").where("agentTokenHash", "==", tokenHash).limit(1).get();
+    if (!snap.empty) {
+      return { uid: snap.docs[0].id };
+    }
+    return null;
+  }
+
+  const legacyToken = process.env.OTAKUS_AGENT_API_TOKEN;
+  if (legacyToken) {
+    if (token === legacyToken) return { uid: requestedUid || "demo-user" };
+    return null;
+  }
+
+  if (token) {
+    return { uid: requestedUid || "demo-user" };
+  }
+
+  return { uid: requestedUid || "demo-user" };
+}
+
+export async function isAgentAuthorized(request: Request): Promise<boolean> {
+  const auth = await authorizeAgentRequest(request);
+  return Boolean(auth);
+}
+
+export async function persistAgentSignal(
+  uid: string,
+  data: {
+    kind: "game_started" | "game_stopped" | "manual_sync" | "spending_alert";
+    sourceApp: "sipsungjang" | "gachaguard" | "otakuhub";
+    gameId?: string | null;
+    userGameId?: string | null;
+    occurredAt?: string | null;
+    message?: string | null;
+    amount?: number | null;
+    currency?: string | null;
+    signalId?: string;
+  },
+): Promise<string> {
+  const signalId = data.signalId || crypto.randomUUID();
+  if (hasFirebaseEnv() || hasFirebaseAdminEnv()) {
+    const db = getAdminDb();
+    const now = Timestamp.now();
+    const occurredAt = data.occurredAt ? Timestamp.fromDate(new Date(data.occurredAt)) : now;
+    const expiresAt = Timestamp.fromMillis(now.toMillis() + 30 * 24 * 60 * 60 * 1000);
+    const signalRef = db.doc(`users/${uid}/agentSignals/${signalId}`);
+    await signalRef.set({
+      kind: data.kind,
+      source_app: data.sourceApp,
+      game_id: data.gameId ?? null,
+      user_game_id: data.userGameId ?? null,
+      occurred_at: occurredAt,
+      received_at: now,
+      expires_at: expiresAt,
+      message: data.message ?? null,
+      amount: data.amount ?? null,
+      currency: data.currency ?? null,
+      schema_version: 1,
+      created_at: now,
+      updated_at: now,
+    });
+  }
+  return signalId;
 }
 
 export function rejectProcessPayload(value: unknown) {
@@ -63,7 +159,9 @@ export function rejectProcessPayload(value: unknown) {
 }
 
 export function buildAgentConfig(origin: string) {
-  const protectedByToken = Boolean(process.env.OTAKUS_AGENT_API_TOKEN);
+  const protectedByToken = Boolean(
+    hasFirebaseEnv() || hasFirebaseAdminEnv() || process.env.OTAKUS_AGENT_API_TOKEN,
+  );
   return {
     appId: "otakuhub" as const,
     displayName: "OtakuHub",

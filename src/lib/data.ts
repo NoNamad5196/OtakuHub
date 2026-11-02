@@ -1,10 +1,10 @@
 import { getDemoDashboardData } from "@/lib/mock-store";
-import { getSupabaseDashboardData } from "@/lib/repositories/dashboard";
+import { getFirestoreDashboardData } from "@/lib/repositories/dashboard";
 import type { DashboardData } from "@/lib/types";
 
 export async function getDashboardData(): Promise<DashboardData> {
   try {
-    return (await getSupabaseDashboardData()) ?? getDemoDashboardData();
+    return (await getFirestoreDashboardData()) ?? getDemoDashboardData();
   } catch (error) {
     console.warn("Falling back to demo dashboard data:", error);
     return getDemoDashboardData();

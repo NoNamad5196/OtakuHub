@@ -1,6 +1,6 @@
 import { SettingsClient } from "@/components/settings-client";
 import { getDashboardData } from "@/lib/data";
-import { hasSupabaseEnv, hasSupabaseServiceEnv } from "@/lib/supabase/env";
+import { hasFirebaseAdminEnv, hasFirebaseEnv } from "@/lib/firebase/env";
 
 export default async function SettingsPage() {
   const data = await getDashboardData();
@@ -11,8 +11,8 @@ export default async function SettingsPage() {
   return (
     <SettingsClient
       data={data}
-      supabaseReady={hasSupabaseEnv()}
-      serviceReady={hasSupabaseServiceEnv()}
+      supabaseReady={hasFirebaseEnv()}
+      serviceReady={hasFirebaseAdminEnv()}
       geminiConfigured={geminiConfigured}
       cronHardened={cronHardened}
       agentTokenConfigured={agentTokenConfigured}

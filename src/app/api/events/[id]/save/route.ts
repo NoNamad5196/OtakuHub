@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { saveEvent } from "@/lib/mock-store";
 import { apiError } from "@/lib/api/errors";
-import { saveSupabaseEvent } from "@/lib/repositories/mutations";
-import { hasSupabaseEnv } from "@/lib/supabase/env";
+import { saveFirestoreEvent } from "@/lib/repositories/mutations";
+import { hasFirebaseAdminEnv, hasFirebaseEnv } from "@/lib/firebase/env";
 
 export async function POST(
   _request: Request,
@@ -10,7 +10,8 @@ export async function POST(
 ) {
   try {
     const { id } = await context.params;
-    const event = hasSupabaseEnv() ? await saveSupabaseEvent(id) : saveEvent(id);
+    const isConfigured = hasFirebaseEnv() || hasFirebaseAdminEnv();
+    const event = isConfigured ? await saveFirestoreEvent(id) : saveEvent(id);
     if (!event) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }

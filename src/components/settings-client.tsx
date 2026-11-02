@@ -92,9 +92,11 @@ export function SettingsClient({
     if (!addingGame) return;
     const query = gameName.trim();
     if (query.length < 2) {
-      setPaletteSuggestion(null);
-      setPaletteError(null);
-      return;
+      const timer = window.setTimeout(() => {
+        setPaletteSuggestion(null);
+        setPaletteError(null);
+      }, 0);
+      return () => window.clearTimeout(timer);
     }
 
     const controller = new AbortController();
@@ -423,7 +425,7 @@ export function SettingsClient({
 
         <SettingSection title="시스템 상태" subtitle="배포 전 점검용 보조 정보입니다.">
           <div className="grid gap-3 p-4 md:grid-cols-3">
-            <StatusCard icon={ShieldCheck} title="Supabase" ok={supabaseReady} detail={serviceReady ? "서비스 키 준비됨" : "데모 모드"} />
+            <StatusCard icon={ShieldCheck} title="Firebase" ok={supabaseReady} detail={serviceReady ? "Admin SDK 준비됨" : "데모 모드"} />
             <StatusCard icon={KeyRound} title="Gemini" ok={geminiConfigured} detail={geminiConfigured ? "AI 추출 준비됨" : "로컬 추정 사용"} />
             <StatusCard icon={Terminal} title="Cron" ok={cronHardened} detail={cronHardened ? "보호됨" : "시크릿 필요"} />
           </div>
