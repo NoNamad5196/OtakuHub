@@ -16,14 +16,19 @@ describe("deployment readiness", () => {
     ]);
   });
 
-  it("documents Supabase setup, Vercel envs, and GET-based Cron behavior", () => {
+  it("documents Firebase setup, OtakuS launcher envs, and GET-based Cron behavior", () => {
     const readme = readFileSync(join(process.cwd(), "README.md"), "utf8");
+    const envExample = readFileSync(join(process.cwd(), ".env.example"), "utf8");
 
-    expect(readme).toContain("Apply `supabase/migrations/202605080001_initial_schema.sql`");
-    expect(readme).toContain("Apply `supabase/seed.sql`");
-    expect(readme).toContain("`NEXT_PUBLIC_SUPABASE_URL`");
-    expect(readme).toContain("`SUPABASE_SERVICE_ROLE_KEY`");
-    expect(readme).toContain("daily Vercel Cron job for `GET /api/crawl/run`");
+    expect(readme).toContain("docs/otakus-firestore-contract.md");
+    expect(readme).toContain("scripts/migrate-from-supabase.mjs");
+    expect(readme).toContain("`NEXT_PUBLIC_SIPSUNGJANG_URL`");
+    expect(readme).toContain("`NEXT_PUBLIC_GACHAGUARD_URL`");
+    expect(readme).toContain("`GET /api/crawl/run`");
     expect(readme).not.toMatch(/Vercel Cron[^\n.]*POST/i);
+    expect(envExample).toContain("NEXT_PUBLIC_FIREBASE_PROJECT_ID=");
+    expect(envExample).toContain("FIREBASE_PRIVATE_KEY=");
+    expect(envExample).toContain("NEXT_PUBLIC_SIPSUNGJANG_URL=");
+    expect(envExample).toContain("NEXT_PUBLIC_GACHAGUARD_URL=");
   });
 });

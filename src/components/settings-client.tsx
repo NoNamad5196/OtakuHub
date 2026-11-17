@@ -19,7 +19,8 @@ import {
   Wallet,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { AppLauncher } from "@/components/app-launcher";
 import { PageTop } from "@/components/dashboard-client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -88,35 +89,7 @@ export function SettingsClient({
     return () => media.removeEventListener("change", handler);
   }, [theme]);
 
-  useEffect(() => {
-    if (!addingGame) return;
-    const query = gameName.trim();
-    if (query.length < 2) {
-      const timer = window.setTimeout(() => {
-        setPaletteSuggestion(null);
-        setPaletteError(null);
-      }, 0);
-      return () => window.clearTimeout(timer);
-    }
-
-    const controller = new AbortController();
-    const timer = window.setTimeout(() => {
-      void lookupPalette(query, controller.signal);
-    }, 550);
-
-    return () => {
-      window.clearTimeout(timer);
-      controller.abort();
-    };
-  }, [addingGame, gameName]);
-
-  function setTheme(next: ThemeChoice) {
-    setThemeState(next);
-    localStorage.setItem("otakuhub-theme", next);
-    applyTheme(next);
-  }
-
-  async function lookupPalette(query = gameName.trim(), signal?: AbortSignal) {
+  const lookupPalette = useCallback(async (query: string, signal?: AbortSignal) => {
     if (query.length < 2) {
       setPaletteError("검색할 이름을 조금 더 입력해주세요.");
       return;
@@ -137,6 +110,34 @@ export function SettingsClient({
     } finally {
       if (!signal?.aborted) setPalettePending(false);
     }
+  }, []);
+
+  useEffect(() => {
+    if (!addingGame) return;
+    const query = gameName.trim();
+    if (query.length < 2) {
+      const timer = window.setTimeout(() => {
+        setPaletteSuggestion(null);
+        setPaletteError(null);
+      }, 0);
+      return () => window.clearTimeout(timer);
+    }
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      void lookupPalette(query, controller.signal);
+    }, 550);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [addingGame, gameName, lookupPalette]);
+
+  function setTheme(next: ThemeChoice) {
+    setThemeState(next);
+    localStorage.setItem("otakuhub-theme", next);
+    applyTheme(next);
   }
 
   async function addGame(formData: FormData) {
@@ -301,6 +302,13 @@ export function SettingsClient({
           />
         </SettingSection>
 
+        <SettingSection
+          title="서비스 런처"
+          subtitle="같은 계정과 게임을 중심으로 육성, 이벤트, 소비 기록을 이어가는 OtakuS 연결 서비스입니다."
+        >
+          <AppLauncher />
+        </SettingSection>
+
         <SettingSection id="games" title="내 게임" subtitle="AI가 일정을 수집할 대상 게임입니다. 사이드바와 캘린더 필터에 표시됩니다.">
           <div className="flex flex-wrap gap-2 p-4">
             {franchises.map((franchise) => (
@@ -349,7 +357,7 @@ export function SettingsClient({
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => lookupPalette()}
+                  onClick={() => void lookupPalette(gameName.trim())}
                   disabled={palettePending || gameName.trim().length < 2}
                 >
                   {palettePending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
