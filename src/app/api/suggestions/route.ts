@@ -3,10 +3,8 @@ import { z } from "zod";
 import { listSuggestions, updateSuggestionStatus } from "@/lib/mock-store";
 import { apiError } from "@/lib/api/errors";
 import { getDashboardData } from "@/lib/data";
-import {
-  updateSupabaseSuggestionStatus,
-} from "@/lib/repositories/mutations";
-import { hasSupabaseEnv } from "@/lib/supabase/env";
+import { updateFirestoreSuggestionStatus } from "@/lib/repositories/mutations";
+import { hasFirebaseAdminEnv, hasFirebaseEnv } from "@/lib/firebase/env";
 import { suggestionStatuses } from "@/lib/types";
 
 const patchSuggestionSchema = z.object({
@@ -14,12 +12,16 @@ const patchSuggestionSchema = z.object({
   status: z.enum(suggestionStatuses),
 });
 
+function isConfigured() {
+  return hasFirebaseEnv() || hasFirebaseAdminEnv();
+}
+
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const status = url.searchParams.get("status");
     const validStatus = suggestionStatuses.find((item) => item === status);
-    const suggestions = hasSupabaseEnv()
+    const suggestions = isConfigured()
       ? (await getDashboardData()).suggestions.filter((suggestion) =>
           validStatus ? suggestion.status === validStatus : true,
         )
@@ -33,8 +35,8 @@ export async function GET(request: Request) {
 export async function PATCH(request: Request) {
   try {
     const input = patchSuggestionSchema.parse(await request.json());
-    const suggestion = hasSupabaseEnv()
-      ? await updateSupabaseSuggestionStatus(input.id, input.status)
+    const suggestion = isConfigured()
+      ? await updateFirestoreSuggestionStatus(input.id, input.status)
       : updateSuggestionStatus(input.id, input.status);
     if (!suggestion) {
       return NextResponse.json({ error: "Suggestion not found" }, { status: 404 });

@@ -2,9 +2,11 @@
 
 import {
   CalendarDays,
+  ChevronDown,
   ChevronRight,
   Compass,
   LayoutDashboard,
+  LayoutGrid,
   LogOut,
   Menu,
   Package,
@@ -16,6 +18,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
+import { AppLauncher } from "@/components/app-launcher";
 import { AuthButton } from "@/components/auth-button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -91,6 +94,7 @@ function SidebarContent({
 }) {
   const pathname = usePathname();
   const [gamesOpen, setGamesOpen] = useState(true);
+  const [launcherOpen, setLauncherOpen] = useState(false);
   const sortedFranchises = useMemo(
     () => [...franchises].sort((a, b) => (a.priority ?? 9) - (b.priority ?? 9) || a.name.localeCompare(b.name)),
     [franchises],
@@ -190,6 +194,30 @@ function SidebarContent({
       </div>
 
       <div className="border-t border-[var(--sidebar-border)] p-3">
+        <div className="mb-3">
+          <button
+            type="button"
+            onClick={() => setLauncherOpen((open) => !open)}
+            aria-expanded={launcherOpen}
+            className="flex w-full items-center justify-between rounded-lg border border-[var(--sidebar-border)] bg-[oklch(18%_0.012_270)] px-3 py-2 text-xs font-semibold text-[var(--sidebar-text)] transition hover:bg-[var(--sidebar-hover)] hover:text-white"
+          >
+            <span className="flex items-center gap-2">
+              <LayoutGrid className="h-3.5 w-3.5 text-[var(--accent)]" />
+              연결된 서비스
+            </span>
+            <ChevronDown
+              className={cn(
+                "h-3.5 w-3.5 text-[var(--sidebar-muted)] transition-transform",
+                launcherOpen && "rotate-180",
+              )}
+            />
+          </button>
+          {launcherOpen && (
+            <div className="mt-2">
+              <AppLauncher compact onNavigate={onNavigate} />
+            </div>
+          )}
+        </div>
         <div className="mb-3 rounded-lg border border-[var(--sidebar-border)] bg-[oklch(18%_0.012_270)] p-3">
           <div className="flex items-center gap-2 text-xs font-semibold text-white">
             <Sparkles className="h-3.5 w-3.5 text-[var(--accent)]" />

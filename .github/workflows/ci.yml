@@ -25,9 +25,14 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npm run typecheck
-      - run: npm test
-      - run: npm run build
-      # 기존 lint 오류 1건(react-hooks/set-state-in-effect)이 있어 정리 전까지 실패해도 CI를 막지 않음
       - run: npm run lint
-        continue-on-error: true
+      - run: npm run typecheck
+      - run: npm run test
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Firestore and Auth emulator integration tests
+        run: npm run test:emulator
+      - run: npm run build

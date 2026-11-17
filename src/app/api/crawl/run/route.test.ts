@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
-  hasSupabaseServiceEnv: vi.fn(),
+  hasFirebaseAdminEnv: vi.fn(),
   runCrawlPipeline: vi.fn(),
 }));
 
@@ -9,8 +9,8 @@ vi.mock("@/lib/crawlers", () => ({
   runCrawlPipeline: mocks.runCrawlPipeline,
 }));
 
-vi.mock("@/lib/supabase/env", () => ({
-  hasSupabaseServiceEnv: mocks.hasSupabaseServiceEnv,
+vi.mock("@/lib/firebase/env", () => ({
+  hasFirebaseAdminEnv: mocks.hasFirebaseAdminEnv,
 }));
 
 import { GET, POST } from "@/app/api/crawl/run/route";
@@ -34,7 +34,7 @@ function request(headers?: HeadersInit) {
 describe("/api/crawl/run route", () => {
   beforeEach(() => {
     process.env.CRON_SECRET = "test-cron-secret";
-    mocks.hasSupabaseServiceEnv.mockReturnValue(true);
+    mocks.hasFirebaseAdminEnv.mockReturnValue(true);
     mocks.runCrawlPipeline.mockResolvedValue(crawlResult);
   });
 
@@ -68,8 +68,8 @@ describe("/api/crawl/run route", () => {
     expect(mocks.runCrawlPipeline).not.toHaveBeenCalled();
   });
 
-  it("keeps demo mode open when Supabase service env and CRON_SECRET are absent", async () => {
-    mocks.hasSupabaseServiceEnv.mockReturnValue(false);
+  it("keeps demo mode open when Firebase admin env and CRON_SECRET are absent", async () => {
+    mocks.hasFirebaseAdminEnv.mockReturnValue(false);
     delete process.env.CRON_SECRET;
 
     const response = await POST(request());

@@ -7,9 +7,9 @@ import type { CrawlPost, CrawlSourceAdapter } from "@/lib/crawlers/types";
 import { getDemoDashboardData } from "@/lib/mock-store";
 import { appendCrawlRun, appendSuggestion } from "@/lib/mock-store";
 import {
-  appendSupabaseCrawlRun,
-  getSupabaseCrawlContext,
-  persistSupabaseCrawlSuggestion,
+  appendFirestoreCrawlRun,
+  getFirestoreCrawlContext,
+  persistFirestoreCrawlSuggestion,
 } from "@/lib/repositories/crawler";
 import type { CrawlSource, EventSuggestion, Franchise } from "@/lib/types";
 
@@ -38,7 +38,7 @@ async function suggestionFromPost(
   post: CrawlPost,
   source: CrawlSource,
   franchise?: Franchise,
-  persistToSupabase = false,
+  persistToFirestore = false,
 ): Promise<EventSuggestion> {
   const extracted = await extractEventFromPost({
     title: post.title,
@@ -47,8 +47,8 @@ async function suggestionFromPost(
     franchiseName: franchise?.name,
   });
 
-  if (persistToSupabase) {
-    return persistSupabaseCrawlSuggestion({ post, source, extracted });
+  if (persistToFirestore) {
+    return persistFirestoreCrawlSuggestion({ post, source, extracted });
   }
 
   return appendSuggestion({
@@ -68,8 +68,8 @@ async function suggestionFromPost(
 
 export async function runCrawlPipeline() {
   const startedAt = new Date().toISOString();
-  const supabaseContext = await getSupabaseCrawlContext();
-  const data = supabaseContext ?? getDemoDashboardData();
+  const firestoreContext = await getFirestoreCrawlContext();
+  const data = firestoreContext ?? getDemoDashboardData();
   const activeSources = data.sources.filter((source) => source.isActive);
   const created: EventSuggestion[] = [];
   const errors: string[] = [];
@@ -82,7 +82,7 @@ export async function runCrawlPipeline() {
       postsFound += posts.length;
       const franchise = data.franchises.find((item) => item.id === source.franchiseId);
       for (const post of posts.slice(0, 3)) {
-        created.push(await suggestionFromPost(post, source, franchise, Boolean(supabaseContext)));
+        created.push(await suggestionFromPost(post, source, franchise, Boolean(firestoreContext)));
       }
       const run = {
         sourceId: source.id,
@@ -92,8 +92,8 @@ export async function runCrawlPipeline() {
         startedAt: sourceStartedAt,
         finishedAt: new Date().toISOString(),
       };
-      if (supabaseContext) {
-        await appendSupabaseCrawlRun(run);
+      if (firestoreContext) {
+        await appendFirestoreCrawlRun(run);
       } else {
         appendCrawlRun(run);
       }
@@ -109,8 +109,8 @@ export async function runCrawlPipeline() {
         startedAt: sourceStartedAt,
         finishedAt: new Date().toISOString(),
       };
-      if (supabaseContext) {
-        await appendSupabaseCrawlRun(run);
+      if (firestoreContext) {
+        await appendFirestoreCrawlRun(run);
       } else {
         appendCrawlRun(run);
       }

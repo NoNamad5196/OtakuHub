@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { acceptSuggestion } from "@/lib/mock-store";
 import { apiError } from "@/lib/api/errors";
-import { acceptSupabaseSuggestion } from "@/lib/repositories/mutations";
-import { hasSupabaseEnv } from "@/lib/supabase/env";
+import { acceptFirestoreSuggestion } from "@/lib/repositories/mutations";
+import { hasFirebaseAdminEnv, hasFirebaseEnv } from "@/lib/firebase/env";
 
 export async function POST(
   _request: Request,
@@ -10,7 +10,8 @@ export async function POST(
 ) {
   try {
     const { id } = await context.params;
-    const result = hasSupabaseEnv() ? await acceptSupabaseSuggestion(id) : acceptSuggestion(id);
+    const isConfigured = hasFirebaseEnv() || hasFirebaseAdminEnv();
+    const result = isConfigured ? await acceptFirestoreSuggestion(id) : acceptSuggestion(id);
     if (!result) {
       return NextResponse.json({ error: "Suggestion not found" }, { status: 404 });
     }

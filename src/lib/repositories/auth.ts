@@ -1,22 +1,9 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/lib/database.types";
+import { getSessionUser } from "@/lib/firebase/session";
 
 export type AuthenticatedUser = {
   id: string;
   email?: string;
 };
-
-export async function getAuthenticatedUser(
-  supabase: SupabaseClient<Database> | null,
-): Promise<AuthenticatedUser | null> {
-  if (!supabase) return null;
-  const { data, error } = await supabase.auth.getClaims();
-  if (error || !data?.claims?.sub) return null;
-  return {
-    id: data.claims.sub,
-    email: typeof data.claims.email === "string" ? data.claims.email : undefined,
-  };
-}
 
 export class AuthenticationRequiredError extends Error {
   constructor() {
@@ -28,4 +15,13 @@ export class AuthenticationRequiredError extends Error {
 export function requireUser(user: AuthenticatedUser | null): AuthenticatedUser {
   if (!user) throw new AuthenticationRequiredError();
   return user;
+}
+
+export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> {
+  const sessionUser = await getSessionUser();
+  if (!sessionUser) return null;
+  return {
+    id: sessionUser.uid,
+    email: sessionUser.email ?? undefined,
+  };
 }

@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { runCrawlPipeline } from "@/lib/crawlers";
-import { hasSupabaseServiceEnv } from "@/lib/supabase/env";
+import { hasFirebaseAdminEnv } from "@/lib/firebase/env";
 
 function authorize(request: Request) {
   const secret = process.env.CRON_SECRET;
-  if (!hasSupabaseServiceEnv() && (!secret || secret === "change-me-before-deploy")) return true;
+  if (!hasFirebaseAdminEnv() && (!secret || secret === "change-me-before-deploy")) return true;
   if (!secret || secret === "change-me-before-deploy") return false;
   return request.headers.get("authorization") === `Bearer ${secret}`;
 }

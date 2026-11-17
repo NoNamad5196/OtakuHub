@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("@/lib/supabase/server", () => ({
-  createServerSupabaseClient: vi.fn(async () => null),
+vi.mock("@/lib/firebase/session", () => ({
+  getSessionUser: vi.fn(async () => null),
 }));
 
 import { AuthenticationRequiredError, createSupabaseEvent } from "@/lib/repositories/mutations";
 
-describe("Supabase mutations", () => {
+describe("Firestore mutations", () => {
   it("requires authentication for protected mutations", async () => {
     await expect(
       createSupabaseEvent({

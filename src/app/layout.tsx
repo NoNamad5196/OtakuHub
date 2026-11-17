@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
 import { AppShell } from "@/components/app-shell";
+import { AuthProvider } from "@/components/auth/auth-provider";
 import { getDashboardData } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -39,9 +40,11 @@ export default async function RootLayout({
             })();
           `}
         </Script>
-        <AppShell franchises={data.franchises} pendingSuggestionCount={pendingSuggestionCount}>
-          {children}
-        </AppShell>
+        <AuthProvider>
+          <AppShell franchises={data.franchises} pendingSuggestionCount={pendingSuggestionCount}>
+            {children}
+          </AppShell>
+        </AuthProvider>
       </body>
     </html>
   );

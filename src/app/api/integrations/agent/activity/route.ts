@@ -3,14 +3,16 @@ import { getDashboardData } from "@/lib/data";
 import { apiError } from "@/lib/api/errors";
 import {
   agentActivitySchema,
+  authorizeAgentRequest,
   findFranchise,
-  isAgentAuthorized,
+  persistAgentSignal,
   rejectProcessPayload,
 } from "@/lib/integrations/agent";
 import { recordAgentActivity } from "@/lib/mock-store";
 
 export async function POST(request: Request) {
-  if (!isAgentAuthorized(request)) {
+  const auth = await authorizeAgentRequest(request);
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -36,6 +38,15 @@ export async function POST(request: Request) {
       externalGameId: input.game?.externalGameId ?? null,
       occurredAt: input.occurredAt,
       note: input.note ?? null,
+    });
+
+    await persistAgentSignal(auth.uid, {
+      kind: input.signal,
+      sourceApp: input.appId,
+      gameId: input.game?.externalGameId ?? null,
+      occurredAt: input.occurredAt ?? null,
+      message: input.note ?? null,
+      signalId: record.id,
     });
 
     return NextResponse.json(

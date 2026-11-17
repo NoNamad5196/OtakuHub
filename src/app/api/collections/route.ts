@@ -3,8 +3,8 @@ import { z } from "zod";
 import { createCollection, listCollections } from "@/lib/mock-store";
 import { apiError } from "@/lib/api/errors";
 import { getDashboardData } from "@/lib/data";
-import { createSupabaseCollection } from "@/lib/repositories/mutations";
-import { hasSupabaseEnv } from "@/lib/supabase/env";
+import { createFirestoreCollection } from "@/lib/repositories/mutations";
+import { hasFirebaseAdminEnv, hasFirebaseEnv } from "@/lib/firebase/env";
 
 const createCollectionSchema = z.object({
   eventId: z.string().nullable().optional(),
@@ -16,8 +16,12 @@ const createCollectionSchema = z.object({
   memo: z.string().nullable().optional(),
 });
 
+function isConfigured() {
+  return hasFirebaseEnv() || hasFirebaseAdminEnv();
+}
+
 export async function GET() {
-  if (!hasSupabaseEnv()) return NextResponse.json({ data: listCollections() });
+  if (!isConfigured()) return NextResponse.json({ data: listCollections() });
   const data = await getDashboardData();
   return NextResponse.json({ data: data.collections });
 }
@@ -25,8 +29,8 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const input = createCollectionSchema.parse(await request.json());
-    const item = hasSupabaseEnv()
-      ? await createSupabaseCollection(input)
+    const item = isConfigured()
+      ? await createFirestoreCollection(input)
       : createCollection(input);
     return NextResponse.json({ data: item }, { status: 201 });
   } catch (error) {

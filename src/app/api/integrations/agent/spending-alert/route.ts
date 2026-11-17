@@ -2,16 +2,18 @@ import { NextResponse } from "next/server";
 import { getDashboardData } from "@/lib/data";
 import { apiError } from "@/lib/api/errors";
 import {
+  authorizeAgentRequest,
   findFranchise,
-  isAgentAuthorized,
   listAgentEvents,
+  persistAgentSignal,
   rejectProcessPayload,
   spendingAlertSchema,
 } from "@/lib/integrations/agent";
 import { recordSpendingAlert } from "@/lib/mock-store";
 
 export async function POST(request: Request) {
-  if (!isAgentAuthorized(request)) {
+  const auth = await authorizeAgentRequest(request);
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -39,6 +41,17 @@ export async function POST(request: Request) {
       currency: input.currency,
       occurredAt: input.occurredAt ?? new Date().toISOString(),
     });
+
+    await persistAgentSignal(auth.uid, {
+      kind: "spending_alert",
+      sourceApp: input.appId,
+      amount: input.projectedSpend,
+      currency: input.currency,
+      message: input.trigger,
+      occurredAt: input.occurredAt ?? null,
+      signalId: alert.id,
+    });
+
     const relatedEvents = listAgentEvents(data, {
       franchiseId: franchise?.id ?? input.franchiseId,
       limit: 5,

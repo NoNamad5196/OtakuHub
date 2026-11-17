@@ -7,7 +7,7 @@ import {
 } from "@/lib/integrations/agent";
 
 export async function GET(request: Request) {
-  if (!isAgentAuthorized(request)) {
+  if (!(await isAgentAuthorized(request))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

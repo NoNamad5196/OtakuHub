@@ -3,8 +3,8 @@ import { z } from "zod";
 import { createEvent, listEvents } from "@/lib/mock-store";
 import { apiError } from "@/lib/api/errors";
 import { getDashboardData } from "@/lib/data";
-import { createSupabaseEvent } from "@/lib/repositories/mutations";
-import { hasSupabaseEnv } from "@/lib/supabase/env";
+import { createFirestoreEvent } from "@/lib/repositories/mutations";
+import { hasFirebaseAdminEnv, hasFirebaseEnv } from "@/lib/firebase/env";
 import { eventTypes } from "@/lib/types";
 
 const createEventSchema = z.object({
@@ -20,8 +20,12 @@ const createEventSchema = z.object({
   remindDays: z.array(z.number().int().min(0).max(30)).optional(),
 });
 
+function isConfigured() {
+  return hasFirebaseEnv() || hasFirebaseAdminEnv();
+}
+
 export async function GET() {
-  if (!hasSupabaseEnv()) return NextResponse.json({ data: listEvents() });
+  if (!isConfigured()) return NextResponse.json({ data: listEvents() });
   const data = await getDashboardData();
   return NextResponse.json({ data: data.events });
 }
@@ -29,7 +33,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const input = createEventSchema.parse(await request.json());
-    const event = hasSupabaseEnv() ? await createSupabaseEvent(input) : createEvent(input);
+    const event = isConfigured() ? await createFirestoreEvent(input) : createEvent(input);
     return NextResponse.json({ data: event }, { status: 201 });
   } catch (error) {
     return apiError(error);
