@@ -69,8 +69,14 @@ export function AuthButton({ compact = false }: { compact?: boolean }) {
 
   if (!firebaseConfigured) {
     return (
-      <Button variant="outline" size="sm" disabled className={compact ? "h-8 w-full text-xs" : undefined}>
-        Demo mode
+      <Button
+        variant="outline"
+        size="sm"
+        disabled
+        className={compact ? "h-8 w-full font-sf text-[11px] font-bold tracking-wider uppercase" : "font-sf text-xs"}
+      >
+        <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
+        DEMO PASS
       </Button>
     );
   }
@@ -84,15 +90,20 @@ export function AuthButton({ compact = false }: { compact?: boolean }) {
         disabled={busy}
         className={compact ? "h-8 w-full justify-start truncate text-xs" : undefined}
       >
-        <LogOut className="h-4 w-4" />
+        <LogOut className="h-3.5 w-3.5 text-[var(--accent)]" />
         <span className="truncate">{email}</span>
       </Button>
     );
   }
 
   return (
-    <Button size="sm" onClick={signIn} disabled={busy} className={compact ? "h-8 w-full text-xs" : undefined}>
-      <LogIn className="h-4 w-4" />
+    <Button
+      size="sm"
+      onClick={signIn}
+      disabled={busy}
+      className={compact ? "h-8 w-full font-sf text-xs font-bold tracking-wide" : "font-sf text-xs"}
+    >
+      <LogIn className="h-3.5 w-3.5" />
       {busy ? "로그인 중..." : "Google 로그인"}
     </Button>
   );

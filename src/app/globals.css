@@ -1,63 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800;900&family=Rajdhani:wght@600;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --bg: oklch(97.5% 0.006 85);
+  /* Astral Daylight (Light Mode): Alabaster parchment + gilded bronze + deep navy ink */
+  --bg: #f5f3ee;
   --surface: #ffffff;
-  --surface-raised: oklch(99% 0.003 85);
-  --border: oklch(91% 0.006 85);
-  --border-strong: oklch(85% 0.008 85);
-  --text-1: oklch(18% 0.01 85);
-  --text-2: oklch(46% 0.01 85);
-  --text-3: oklch(68% 0.008 85);
-  --accent: oklch(52% 0.22 265);
-  --accent-hover: oklch(47% 0.22 265);
-  --accent-bg: oklch(96.5% 0.018 265);
-  --accent-text: oklch(40% 0.22 265);
-  --success: oklch(52% 0.17 145);
-  --success-bg: oklch(96% 0.015 145);
-  --success-text: oklch(38% 0.17 145);
-  --warn: oklch(58% 0.17 75);
-  --warn-bg: oklch(97% 0.015 75);
-  --warn-text: oklch(42% 0.17 75);
-  --danger: oklch(52% 0.2 25);
-  --danger-bg: oklch(97.5% 0.012 25);
-  --danger-text: oklch(40% 0.2 25);
-  --sidebar-bg: oklch(14% 0.012 270);
-  --sidebar-hover: oklch(19% 0.01 270);
-  --sidebar-active: oklch(22% 0.022 265);
-  --sidebar-border: oklch(22% 0.008 270);
-  --sidebar-text: oklch(68% 0.006 270);
-  --sidebar-muted: oklch(46% 0.005 270);
+  --surface-raised: #ede9df;
+  --border: rgba(184, 147, 69, 0.22);
+  --border-strong: rgba(184, 147, 69, 0.45);
+  --text-1: #0f172a;
+  --text-2: #334155;
+  --text-3: #64748b;
+  --accent: #a37a2c;
+  --accent-hover: #8c641f;
+  --accent-bg: rgba(184, 147, 69, 0.12);
+  --accent-text: #7a5813;
+  --hologram: #0284c7;
+  --hologram-bg: rgba(2, 132, 199, 0.1);
+  --hologram-text: #0369a1;
+  --warp: #6d28d9;
+  --warp-bg: rgba(109, 40, 217, 0.1);
+  --warp-text: #5b21b6;
+  --success: #059669;
+  --success-bg: rgba(5, 150, 105, 0.1);
+  --success-text: #047857;
+  --warn: #d97706;
+  --warn-bg: rgba(217, 119, 6, 0.1);
+  --warn-text: #b45309;
+  --danger: #dc2626;
+  --danger-bg: rgba(220, 38, 38, 0.1);
+  --danger-text: #b91c1c;
+  --sidebar-bg: #eae5d8;
+  --sidebar-hover: rgba(184, 147, 69, 0.14);
+  --sidebar-active: rgba(184, 147, 69, 0.22);
+  --sidebar-border: rgba(184, 147, 69, 0.28);
+  --sidebar-text: #1e293b;
+  --sidebar-muted: #64748b;
+  --gold-glow: rgba(184, 147, 69, 0.2);
+  --cyan-glow: rgba(2, 132, 199, 0.2);
   --radius: 0.625rem;
 }
 
 html[data-theme="dark"] {
-  --bg: oklch(16% 0.008 270);
-  --surface: oklch(20% 0.01 270);
-  --surface-raised: oklch(23% 0.012 270);
-  --border: oklch(26% 0.008 270);
-  --border-strong: oklch(32% 0.01 270);
-  --text-1: oklch(94% 0.005 270);
-  --text-2: oklch(72% 0.008 270);
-  --text-3: oklch(52% 0.008 270);
-  --accent: oklch(72% 0.16 265);
-  --accent-hover: oklch(78% 0.16 265);
-  --accent-bg: oklch(28% 0.04 265);
-  --accent-text: oklch(80% 0.14 265);
-  --success: oklch(70% 0.14 145);
-  --success-bg: oklch(26% 0.04 145);
-  --success-text: oklch(78% 0.13 145);
-  --warn: oklch(74% 0.14 75);
-  --warn-bg: oklch(28% 0.04 75);
-  --warn-text: oklch(80% 0.13 75);
-  --danger: oklch(68% 0.18 25);
-  --danger-bg: oklch(26% 0.05 25);
-  --danger-text: oklch(78% 0.15 25);
+  /* Astral Night (Dark Mode - Default): Cosmic obsidian/starfield + astral gold + hologram cyan */
+  --bg: #070b18;
+  --surface: #0c1326;
+  --surface-raised: #121b36;
+  --border: rgba(92, 225, 255, 0.16);
+  --border-strong: rgba(223, 185, 109, 0.36);
+  --text-1: #f8fafc;
+  --text-2: #94a3b8;
+  --text-3: #64748b;
+  --accent: #dfb96d;
+  --accent-hover: #f2d694;
+  --accent-bg: rgba(223, 185, 109, 0.14);
+  --accent-text: #f2d694;
+  --hologram: #5ce1ff;
+  --hologram-bg: rgba(92, 225, 255, 0.12);
+  --hologram-text: #5ce1ff;
+  --warp: #9d84ff;
+  --warp-bg: rgba(157, 132, 255, 0.14);
+  --warp-text: #b8a6ff;
+  --success: #34d399;
+  --success-bg: rgba(52, 211, 153, 0.14);
+  --success-text: #6ee7b7;
+  --warn: #fbbf24;
+  --warn-bg: rgba(251, 191, 36, 0.14);
+  --warn-text: #fde68a;
+  --danger: #f87171;
+  --danger-bg: rgba(248, 113, 113, 0.14);
+  --danger-text: #fca5a5;
+  --sidebar-bg: #060914;
+  --sidebar-hover: rgba(92, 225, 255, 0.08);
+  --sidebar-active: rgba(223, 185, 109, 0.18);
+  --sidebar-border: rgba(223, 185, 109, 0.24);
+  --sidebar-text: #cbd5e1;
+  --sidebar-muted: #64748b;
+  --gold-glow: rgba(223, 185, 109, 0.28);
+  --cyan-glow: rgba(92, 225, 255, 0.28);
 }
 
 @theme inline {
-  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
+  --font-sans: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-sf: "Orbitron", "Rajdhani", sans-serif;
+  --font-orbitron: "Orbitron", "Rajdhani", sans-serif;
   --color-background: var(--bg);
   --color-foreground: var(--text-1);
   --color-card: var(--surface);
@@ -65,7 +92,7 @@ html[data-theme="dark"] {
   --color-popover: var(--surface);
   --color-popover-foreground: var(--text-1);
   --color-primary: var(--accent);
-  --color-primary-foreground: #ffffff;
+  --color-primary-foreground: #070b18;
   --color-secondary: var(--accent-bg);
   --color-secondary-foreground: var(--accent-text);
   --color-muted: var(--surface-raised);
@@ -76,7 +103,7 @@ html[data-theme="dark"] {
   --color-destructive-foreground: #ffffff;
   --color-border: var(--border);
   --color-input: var(--surface);
-  --color-ring: var(--accent);
+  --color-ring: var(--hologram);
   --radius-sm: calc(var(--radius) * 0.65);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) * 1.2);
@@ -102,9 +129,33 @@ body {
 
 body {
   min-height: 100vh;
-  background: var(--bg);
+  background-color: var(--bg);
   color: var(--text-1);
   font-feature-settings: "tnum" 1;
+}
+
+/* Cosmic starfield backdrop for dark mode */
+html[data-theme="dark"] body {
+  background-color: #070b18;
+  background-image: 
+    radial-gradient(ellipse 75% 45% at 50% -10%, rgba(92, 225, 255, 0.09) 0%, transparent 65%),
+    radial-gradient(ellipse 55% 40% at 85% 85%, rgba(157, 132, 255, 0.07) 0%, transparent 55%),
+    radial-gradient(circle at 10% 45%, rgba(223, 185, 109, 0.06) 0%, transparent 40%),
+    radial-gradient(1px 1px at 25px 35px, rgba(255, 255, 255, 0.4), transparent),
+    radial-gradient(1px 1px at 75px 120px, rgba(92, 225, 255, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 160px 80px, rgba(223, 185, 109, 0.6), transparent),
+    radial-gradient(1px 1px at 240px 190px, rgba(255, 255, 255, 0.35), transparent);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 300px 300px, 280px 280px, 350px 350px, 320px 320px;
+  background-attachment: fixed;
+}
+
+/* Astral Daylight background */
+html[data-theme="light"] body {
+  background-color: #f5f3ee;
+  background-image:
+    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(184, 147, 69, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 90%, rgba(2, 132, 199, 0.04) 0%, transparent 50%);
+  background-attachment: fixed;
 }
 
 button,
@@ -119,12 +170,13 @@ a:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--hologram);
   outline-offset: 2px;
 }
 
 ::selection {
-  background: color-mix(in oklch, var(--accent) 24%, transparent);
+  background: color-mix(in oklch, var(--hologram) 30%, transparent);
+  color: var(--text-1);
 }
 
 ::-webkit-scrollbar {
@@ -133,22 +185,31 @@ select:focus-visible {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: color-mix(in oklch, var(--text-3) 35%, transparent);
+  background: rgba(223, 185, 109, 0.25);
   border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(223, 185, 109, 0.45);
 }
 
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 
+.font-sf {
+  font-family: var(--font-sf);
+  letter-spacing: 0.05em;
+}
+
 .screen-enter {
-  animation: fade-in 0.18s ease;
+  animation: fade-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -181,8 +242,43 @@ select:focus-visible {
     transform: scale(1);
   }
   50% {
-    opacity: 0.45;
+    opacity: 0.35;
     transform: scale(0.7);
+  }
+}
+
+@keyframes scan-beam {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes radar-sweep {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes holo-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
   }
 }
 
@@ -190,6 +286,9 @@ select:focus-visible {
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--surface);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.25);
+  position: relative;
 }
 
 .panel-muted {
@@ -198,20 +297,80 @@ select:focus-visible {
   background: var(--surface-raised);
 }
 
+/* SF Astral Chamfer & Ticket Accents */
+.chamfer-corner {
+  clip-path: polygon(
+    0 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% 100%,
+    10px 100%,
+    0 calc(100% - 10px)
+  );
+}
+
+.chamfer-top-right {
+  clip-path: polygon(
+    0 0,
+    calc(100% - 12px) 0,
+    100% 12px,
+    100% 100%,
+    0 100%
+  );
+}
+
+.ticket-notch-x {
+  position: relative;
+}
+
+.ticket-notch-x::before,
+.ticket-notch-x::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bg);
+  transform: translateY(-50%);
+  border: 1px solid var(--border);
+  z-index: 10;
+}
+
+.ticket-notch-x::before {
+  left: -7px;
+  clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+}
+
+.ticket-notch-x::after {
+  right: -7px;
+  clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+}
+
+.hologram-glow {
+  box-shadow: 0 0 16px -2px var(--cyan-glow);
+}
+
+.gold-glow {
+  box-shadow: 0 0 16px -2px var(--gold-glow);
+}
+
 .sidebar-scroll::-webkit-scrollbar {
   width: 4px;
 }
 
 .sidebar-scroll::-webkit-scrollbar-thumb {
-  background: color-mix(in oklch, white 18%, transparent);
+  background: rgba(223, 185, 109, 0.3);
+  border-radius: 4px;
 }
 
+/* FullCalendar Astral Express Styling */
 .fc {
   --fc-border-color: var(--border);
   --fc-page-bg-color: transparent;
   --fc-neutral-bg-color: var(--surface-raised);
   --fc-list-event-hover-bg-color: var(--surface-raised);
-  --fc-today-bg-color: color-mix(in oklch, var(--accent) 12%, transparent);
+  --fc-today-bg-color: rgba(92, 225, 255, 0.08);
   --fc-event-bg-color: var(--accent);
   --fc-event-border-color: var(--accent);
   --fc-small-font-size: 0.76rem;
@@ -219,17 +378,26 @@ select:focus-visible {
 }
 
 .fc .fc-toolbar-title {
-  font-size: 0.95rem;
+  font-family: var(--font-sf);
+  font-size: 1rem;
   font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent-text);
+  text-transform: uppercase;
 }
 
 .fc .fc-button {
-  border-radius: 7px;
+  border-radius: 6px;
   border: 1px solid var(--border-strong);
   background: var(--surface);
-  color: var(--text-2);
+  color: var(--text-1);
+  font-family: var(--font-sf);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
   box-shadow: none;
-  text-transform: none;
+  text-transform: uppercase;
+  transition: all 0.15s ease;
 }
 
 .fc .fc-button-primary:not(:disabled).fc-button-active,
@@ -237,10 +405,45 @@ select:focus-visible {
 .fc .fc-button:hover {
   background: var(--accent);
   border-color: var(--accent);
-  color: white;
+  color: #070b18;
+  box-shadow: 0 0 12px var(--gold-glow);
+}
+
+.fc .fc-col-header-cell {
+  background: var(--surface-raised);
+  padding: 8px 0;
+  font-family: var(--font-sf);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.fc .fc-daygrid-day-number {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-2);
+  padding: 4px 6px;
+}
+
+.fc .fc-day-today .fc-daygrid-day-number {
+  color: var(--hologram);
+  font-weight: 800;
+  text-shadow: 0 0 8px var(--cyan-glow);
 }
 
 .fc .fc-daygrid-event {
   border-radius: 4px;
-  padding: 1px 4px;
+  padding: 2px 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-left-width: 3px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.fc .fc-daygrid-event:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
 }

@@ -31,11 +31,13 @@ export function ActiveNavLink({
     <Link
       href={href}
       className={cn(
-        "inline-flex h-10 items-center gap-2 rounded-md px-3 text-sm text-muted-foreground transition hover:bg-secondary hover:text-foreground",
-        active && "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
+        "inline-flex h-9 items-center gap-2 rounded-md border px-3 font-sf text-xs font-bold tracking-wide transition-all",
+        active
+          ? "border-[var(--accent)] bg-[var(--accent)] text-[#070b18] shadow-[0_0_12px_var(--gold-glow)]"
+          : "border-transparent text-muted-foreground hover:border-[var(--border)] hover:bg-secondary hover:text-foreground",
       )}
     >
-      <Icon className="h-4 w-4 shrink-0" />
+      <Icon className="h-3.5 w-3.5 shrink-0" />
       <span className="whitespace-nowrap">{children}</span>
     </Link>
   );

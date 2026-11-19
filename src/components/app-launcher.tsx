@@ -43,7 +43,7 @@ export function getOtakuSServices(env?: OtakuSEnv): readonly OtakuSService[] {
       name: "SipSungJang",
       description: "육성 · 주간 목표 · 플레이 수첩",
       icon: "✦",
-      color: "#c9a84c",
+      color: "#dfb96d",
       href: validUrl(sipsungjangUrl),
       current: false,
     },
@@ -52,7 +52,7 @@ export function getOtakuSServices(env?: OtakuSEnv): readonly OtakuSService[] {
       name: "OtakuHub",
       description: "게임 · 서브컬처 이벤트와 일정",
       icon: "◈",
-      color: "#6ab0e8",
+      color: "#5ce1ff",
       href: "/dashboard",
       current: true,
     },
@@ -61,7 +61,7 @@ export function getOtakuSServices(env?: OtakuSEnv): readonly OtakuSService[] {
       name: "GachaGuard",
       description: "소비 기록 · 예산 · 과금 돌아보기",
       icon: "⊕",
-      color: "#a882e8",
+      color: "#9d84ff",
       href: validUrl(gachaguardUrl),
       current: false,
     },
@@ -90,35 +90,39 @@ export function AppLauncher({
 
         const cardClass = compact
           ? cn(
-              "flex items-center justify-between gap-2 rounded-md border px-2.5 py-2 text-left transition",
+              "flex items-center justify-between gap-2 rounded-md border px-2.5 py-2 text-left transition-all",
               service.current
-                ? "border-[oklch(52%_0.22_265/0.45)] bg-[var(--sidebar-active)] text-white"
+                ? "border-[var(--accent)]/60 bg-[var(--sidebar-active)] text-foreground shadow-[0_0_10px_var(--gold-glow)]"
                 : service.href
-                  ? "border-[var(--sidebar-border)] bg-[oklch(18%_0.012_270)] text-[var(--sidebar-text)] hover:bg-[var(--sidebar-hover)] hover:text-white"
-                  : "cursor-not-allowed border-[var(--sidebar-border)] bg-[oklch(16%_0.01_270)] text-[var(--sidebar-muted)] opacity-75",
+                  ? "border-[var(--sidebar-border)] bg-[var(--surface-raised)]/80 text-[var(--sidebar-text)] hover:border-[var(--hologram)] hover:bg-[var(--sidebar-hover)] hover:text-foreground hover:shadow-[0_0_8px_var(--cyan-glow)]"
+                  : "cursor-not-allowed border-[var(--sidebar-border)]/60 bg-[var(--surface)]/40 text-[var(--sidebar-muted)] opacity-70",
             )
           : cn(
-              "flex flex-col items-start gap-2 rounded-lg border p-4 text-left transition",
+              "group relative flex flex-col items-start gap-2.5 rounded-lg border p-4 text-left backdrop-blur-md transition-all",
               service.current
-                ? "border-[var(--accent)] bg-[var(--accent-bg)] hover:border-[var(--accent-hover)]"
+                ? "border-[var(--accent)] bg-[var(--accent-bg)] shadow-[0_0_15px_var(--gold-glow)]"
                 : service.href
-                  ? "border-[var(--border-strong)] bg-card hover:bg-muted"
-                  : "cursor-not-allowed border-[var(--border-strong)] bg-muted opacity-70",
+                  ? "border-[var(--border)] bg-card hover:border-[var(--hologram)] hover:shadow-[0_0_16px_var(--cyan-glow)]"
+                  : "cursor-not-allowed border-[var(--border)]/60 bg-muted/40 opacity-70",
             );
 
         const content = compact ? (
           <>
             <span className="flex min-w-0 items-center gap-2">
-              <span aria-hidden="true" className="text-xs font-bold" style={{ color: service.color }}>
+              <span
+                aria-hidden="true"
+                className="font-sf text-xs font-bold drop-shadow-[0_0_6px_currentColor]"
+                style={{ color: service.color }}
+              >
                 {service.icon}
               </span>
-              <strong className="truncate text-xs font-semibold">{service.name}</strong>
+              <strong className="truncate font-sf text-xs font-bold text-foreground">{service.name}</strong>
             </span>
             <span
               className={cn(
-                "shrink-0 text-[10px] font-semibold",
+                "shrink-0 font-sf text-[10px] font-bold tracking-wider",
                 service.current || service.href
-                  ? "text-[oklch(80%_0.12_265)]"
+                  ? "text-[var(--accent-text)]"
                   : "text-[var(--sidebar-muted)]",
               )}
             >
@@ -127,29 +131,36 @@ export function AppLauncher({
           </>
         ) : (
           <>
-            <span
-              aria-hidden="true"
-              className="flex h-9 w-9 items-center justify-center rounded-lg border text-base font-bold"
-              style={{
-                color: service.color,
-                borderColor: `${service.color}40`,
-                backgroundColor: `${service.color}14`,
-              }}
-            >
-              {service.icon}
-            </span>
-            <strong className="text-sm font-bold text-foreground">{service.name}</strong>
+            <div className="flex w-full items-center justify-between">
+              <span
+                aria-hidden="true"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border font-sf text-base font-bold shadow-sm"
+                style={{
+                  color: service.color,
+                  borderColor: `${service.color}60`,
+                  backgroundColor: `${service.color}18`,
+                  boxShadow: `0 0 12px ${service.color}30`,
+                }}
+              >
+                {service.icon}
+              </span>
+              <span
+                className={cn(
+                  "font-sf text-[10px] font-bold tracking-wider uppercase",
+                  service.current
+                    ? "text-[var(--accent-text)]"
+                    : service.href
+                      ? "text-[var(--hologram)]"
+                      : "text-muted-foreground",
+                )}
+              >
+                {statusLabel}
+              </span>
+            </div>
+            <strong className="font-sf text-base font-bold tracking-wide text-foreground">
+              {service.name}
+            </strong>
             <small className="text-xs leading-5 text-[var(--text-2)]">{service.description}</small>
-            <span
-              className={cn(
-                "mt-auto pt-1 text-[11px] font-semibold",
-                service.current || service.href
-                  ? "text-[var(--accent-text)]"
-                  : "text-[var(--text-3)]",
-              )}
-            >
-              {statusLabel}
-            </span>
           </>
         );
 

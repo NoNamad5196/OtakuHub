@@ -7,11 +7,14 @@ import {
   Check,
   CheckCircle2,
   Clock,
+  Compass,
   ExternalLink,
   Package,
+  Radio,
   RefreshCw,
   Sparkles,
   Star,
+  Ticket,
   X,
 } from "lucide-react";
 import Link from "next/link";
@@ -76,72 +79,113 @@ export function DashboardClient({ data }: { data: DashboardData }) {
   }
 
   return (
-    <div className="min-h-full bg-background">
+    <div className="min-h-full bg-background pb-12">
       <PageTop
-        title="대시보드"
-        description={`${new Intl.DateTimeFormat("ko-KR", { dateStyle: "full" }).format(new Date())} · 마지막 수집 ${
+        title="은하 열차 대시보드"
+        description={`${new Intl.DateTimeFormat("ko-KR", { dateStyle: "full" }).format(new Date())} · 마지막 수집: ${
           lastRun ? relativeTime(lastRun.finishedAt) : "대기 중"
         }`}
         action={
           <Button onClick={runCrawl} disabled={running}>
             <RefreshCw className={running ? "animate-spin" : undefined} />
-            {running ? "수집 중..." : "지금 크롤링 실행"}
+            {running ? "신호 탐색 중..." : "지금 크롤링 실행"}
           </Button>
         }
       />
 
       <div className="px-4 pb-8 sm:px-7">
         {error && (
-          <div className="mb-3 rounded-lg border border-[var(--danger)] bg-[var(--danger-bg)] px-4 py-3 text-sm font-medium text-[var(--danger-text)]">
+          <div className="mb-4 rounded-lg border border-[var(--danger)] bg-[var(--danger-bg)] px-4 py-3 text-sm font-medium text-[var(--danger-text)] shadow-sm">
             {error}
           </div>
         )}
 
-        <section className="panel relative overflow-hidden p-5">
-          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+        {/* Astral Express Warp Radar Console */}
+        <section className="panel relative overflow-hidden border border-[var(--border-strong)] bg-gradient-to-r from-[var(--surface)] via-[var(--surface-raised)] to-[var(--surface)] p-5 shadow-[0_4px_30px_rgba(0,0,0,0.3)]">
+          {/* Subtle cosmic beam animation */}
+          <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[var(--hologram)]/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-[var(--accent)]/10 blur-3xl" />
+
+          <div className="relative grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
             <div className="flex min-w-0 gap-4">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] bg-primary text-white shadow-sm">
-                <Sparkles className="h-5 w-5" />
+              <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[var(--accent)] bg-[var(--accent-bg)] text-[var(--accent-text)] shadow-[0_0_15px_var(--gold-glow)]">
+                <Compass className="h-6 w-6 animate-pulse" />
+                <span className="absolute -bottom-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full bg-[var(--hologram)] shadow-[0_0_8px_var(--cyan-glow)]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#070b18]" />
+                </span>
               </div>
               <div className="min-w-0">
-                <div className="mb-1 flex flex-wrap items-center gap-2">
-                  <Badge variant="success">AI 파이프라인 운영 중</Badge>
-                  <span className="text-xs text-[var(--text-3)]">
+                <div className="mb-1.5 flex flex-wrap items-center gap-2">
+                  <Badge variant="success">
+                    <Radio className="h-3 w-3 animate-pulse" />
+                    WARP RELAY ACTIVE
+                  </Badge>
+                  <span className="font-mono text-xs text-[var(--text-3)]">
                     마지막 실행: {lastRun ? relativeTime(lastRun.finishedAt) : "아직 없음"}
                   </span>
                 </div>
-                <h2 className="text-base font-bold leading-7 tracking-tight">
-                  Gemini가 새 게시글 <span className="text-[var(--accent-text)]">{postsScanned}건</span>을 스캔해서{" "}
-                  <span className="text-[var(--accent-text)]">{eventsExtracted}건</span>의 일정 후보를 추출했어요.
+                <h2 className="break-keep text-base font-extrabold leading-7 tracking-tight text-foreground sm:text-lg">
+                  Gemini가 게시글 <span className="font-mono text-[var(--hologram)]">{postsScanned}건</span>을 스캔하여{" "}
+                  <span className="font-mono text-[var(--accent-text)]">{eventsExtracted}건</span>의 일정 후보를 도출했습니다.
                 </h2>
-                <p className="mt-1 text-sm text-[var(--text-2)]">
-                  그 중 <strong>{pendingSuggestions.length}건</strong>이 검수 대기 중입니다. 승인해야 캘린더에 반영됩니다.
+                <p className="mt-1 break-keep text-xs text-[var(--text-2)] sm:text-sm">
+                  검수 대기 <strong className="font-mono text-[var(--warn-text)]">{pendingSuggestions.length}건</strong>이 있습니다. 승인 시 캘린더 스타차트에 즉시 등록됩니다.
                 </p>
                 <PipelineMini posts={postsScanned} extracted={eventsExtracted} pending={pendingSuggestions.length} />
               </div>
             </div>
             <div className="flex flex-col gap-2 lg:items-end">
-              <Button asChild>
+              <Button asChild className="shadow-[0_0_15px_var(--gold-glow)]">
                 <Link href="/discover">
-                  지금 검수하기 ({pendingSuggestions.length})
+                  검수 콘솔 진입 ({pendingSuggestions.length})
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-              <span className="text-xs text-[var(--text-3)]">다음 자동 실행 · 내일 오전 3:00</span>
+              <span className="font-mono text-[11px] text-[var(--text-3)]">
+                AUTO-CYCLE // 내일 03:00 KST
+              </span>
             </div>
           </div>
         </section>
 
-        <section className="mt-3 grid gap-3 md:grid-cols-3">
-          <MetricCard icon={CalendarDays} label="2주 일정" value={`${upcomingEvents.length}건`} tone="success" />
-          <MetricCard icon={Star} label="위시리스트" value={`${data.collections.filter((item) => item.isWishlist).length}개`} tone="warn" />
-          <MetricCard icon={Activity} label="활성 소스" value={`${activeSources.length} / ${data.sources.length}`} tone="neutral" />
+        {/* Express Telemetry Stat Cards */}
+        <section className="mt-4 grid gap-3 md:grid-cols-3">
+          <MetricCard
+            icon={CalendarDays}
+            label="2주 여정 일정"
+            code="DESTINATIONS"
+            value={`${upcomingEvents.length}건`}
+            tone="success"
+          />
+          <MetricCard
+            icon={Star}
+            label="카고 위시리스트"
+            code="CARGO MANIFEST"
+            value={`${data.collections.filter((item) => item.isWishlist).length}개`}
+            tone="warn"
+          />
+          <MetricCard
+            icon={Activity}
+            label="수집 레이더 상태"
+            code="WARP BEACONS"
+            value={`${activeSources.length} / ${data.sources.length}`}
+            tone="neutral"
+          />
         </section>
 
-        <section className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+        {/* Boarding Passes & Stations Grid */}
+        <section className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
           <div className="space-y-4">
-            <SectionHeader icon={Sparkles} title="AI 검수 대기" count={pendingSuggestions.length} href="/discover" />
-            <div className="space-y-2">
+            {/* AI Review Stream */}
+            <SectionHeader
+              icon={Sparkles}
+              title="검수 대기 신호"
+              code="WARP SCANNER QUEUE"
+              count={pendingSuggestions.length}
+              href="/discover"
+              cta="전체 콘솔 열기"
+            />
+            <div className="space-y-2.5">
               {pendingSuggestions.slice(0, 3).map((suggestion) => (
                 <SuggestionCard
                   key={suggestion.id}
@@ -152,59 +196,112 @@ export function DashboardClient({ data }: { data: DashboardData }) {
                   onIgnore={() => review(suggestion.id, "ignore")}
                 />
               ))}
-              {pendingSuggestions.length === 0 && <EmptyPanel icon={CheckCircle2} title="검수 대기 제안이 없습니다" />}
+              {pendingSuggestions.length === 0 && (
+                <EmptyPanel icon={CheckCircle2} title="검수 대기 신호가 없습니다" detail="모든 추출 일정이 승인되어 스타차트에 반영되었습니다." />
+              )}
             </div>
 
-            <SectionHeader icon={CalendarDays} title="다가오는 일정" />
-            <div className="panel overflow-hidden">
+            {/* Upcoming Boarding Passes */}
+            <SectionHeader
+              icon={CalendarDays}
+              title="다가오는 탑승 일정"
+              code="UPCOMING DESTINATIONS"
+              href="/calendar"
+              cta="스타차트 전체 보기"
+            />
+            <div className="space-y-2.5">
               {upcomingEvents.length === 0 ? (
-                <EmptyPanel icon={CalendarDays} title="다가오는 일정이 없습니다" />
+                <EmptyPanel icon={CalendarDays} title="예정된 탑승 일정이 없습니다" detail="새로운 이벤트를 탐색하거나 캘린더에서 수동으로 등록해보세요." />
               ) : (
                 upcomingEvents.map((event, index) => {
                   const franchise = franchiseById.get(event.franchiseId);
                   const delta = daysUntil(event.startDate);
                   return (
-                    <div
+                    <article
                       key={event.id}
-                      className="flex items-center gap-3 border-b px-4 py-3 last:border-b-0"
+                      className="group relative flex flex-col sm:flex-row items-stretch overflow-hidden rounded-lg border border-[var(--border)] bg-card shadow-[0_4px_16px_rgba(0,0,0,0.2)] transition-all hover:border-[var(--accent)] hover:shadow-[0_0_15px_var(--gold-glow)]"
                     >
-                      <div className="w-12 shrink-0 text-center">
-                        <span className="inline-flex rounded-md bg-muted px-2 py-1 text-xs font-bold text-[var(--text-2)]">
-                          {delta === 0 ? "오늘" : `D-${delta}`}
+                      {/* Left Boarding Pass Stub */}
+                      <div className="flex sm:w-28 shrink-0 items-center justify-between sm:flex-col sm:justify-center border-b sm:border-b-0 sm:border-r border-dashed border-[var(--border-strong)] bg-muted/40 p-3 text-center">
+                        <span className="font-sf text-[9px] font-bold tracking-widest text-[var(--accent-text)] uppercase">
+                          BOARDING
+                        </span>
+                        <div className="font-mono text-base font-extrabold text-foreground">
+                          {delta === 0 ? (
+                            <span className="text-[var(--danger-text)]">TODAY</span>
+                          ) : (
+                            <span>D-{delta}</span>
+                          )}
+                        </div>
+                        <span className="hidden font-mono text-[9px] text-[var(--text-3)] sm:inline">
+                          ROUTE TICKET
                         </span>
                       </div>
-                      <span
-                        className="h-1.5 w-1.5 shrink-0 rounded-full"
-                        style={{ backgroundColor: franchise?.colorCode ?? "#0EA5E9" }}
-                      />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold">{event.title}</p>
-                        <p className="text-xs text-[var(--text-3)]">
-                          {franchise?.name ?? "미분류"} · {formatDateRange(event.startDate, event.endDate)}
-                        </p>
+
+                      {/* Ticket Body */}
+                      <div className="flex min-w-0 flex-1 flex-col justify-between p-3.5 sm:p-4">
+                        <div className="flex flex-wrap items-start justify-between gap-2">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <span
+                                className="h-2 w-2 shrink-0 rounded-full shadow-[0_0_6px_currentColor]"
+                                style={{ backgroundColor: franchise?.colorCode ?? "#dfb96d", color: franchise?.colorCode ?? "#dfb96d" }}
+                              />
+                              <span className="font-sf text-[11px] font-bold tracking-wider text-[var(--text-3)] uppercase">
+                                DESTINATION // {franchise?.name ?? "미분류"}
+                              </span>
+                            </div>
+                            <h3 className="mt-1 truncate text-sm font-bold text-foreground sm:text-base">
+                              {event.title}
+                            </h3>
+                          </div>
+                          <Badge variant={index === 0 ? "default" : "outline"} className="shrink-0 font-sf">
+                            {eventTypeLabels[event.type]}
+                          </Badge>
+                        </div>
+
+                        <div className="mt-2.5 flex flex-wrap items-center gap-3 font-mono text-xs text-[var(--text-2)]">
+                          <span className="flex items-center gap-1.5">
+                            <CalendarDays className="h-3.5 w-3.5 text-[var(--hologram)]" />
+                            {formatDateRange(event.startDate, event.endDate)}
+                          </span>
+                          {event.location && (
+                            <span className="text-[var(--text-3)]">
+                              · {event.location}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <Badge variant={index === 0 ? "success" : "outline"}>{eventTypeLabels[event.type]}</Badge>
-                    </div>
+                    </article>
                   );
                 })
               )}
             </div>
           </div>
 
-          <aside className="space-y-4">
-            <SectionHeader icon={Activity} title="크롤러 상태" />
-            <div className="panel overflow-hidden">
+          {/* Right Radar & Manifest Column */}
+          <aside className="space-y-5">
+            {/* Crawler Sensors */}
+            <SectionHeader
+              icon={Activity}
+              title="워프 비콘 레이더"
+              code="ACTIVE SENSORS"
+            />
+            <div className="panel divide-y divide-[var(--border)] overflow-hidden">
               {data.sources.map((source) => {
                 const franchise = franchiseById.get(source.franchiseId ?? "");
                 return (
-                  <div key={source.id} className="flex items-center gap-3 border-b px-4 py-3 last:border-b-0">
+                  <div key={source.id} className="flex items-center gap-3 p-3 transition hover:bg-muted/40">
                     <span
-                      className="h-2 w-2 shrink-0 rounded-full"
-                      style={{ backgroundColor: source.isActive ? "var(--success)" : "var(--warn)" }}
+                      className="h-2 w-2 shrink-0 rounded-full shadow-[0_0_6px_currentColor]"
+                      style={{
+                        backgroundColor: source.isActive ? "var(--success)" : "var(--warn)",
+                        color: source.isActive ? "var(--success)" : "var(--warn)",
+                      }}
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-xs font-semibold">{source.name}</p>
-                      <p className="truncate text-[11px] text-[var(--text-3)]">
+                      <p className="truncate text-xs font-bold text-foreground">{source.name}</p>
+                      <p className="truncate font-mono text-[10px] text-[var(--text-3)]">
                         {crawlSourceTypeLabels[source.sourceType]} · {franchise?.name ?? "공통"} ·{" "}
                         {source.lastCrawledAt ? relativeTime(source.lastCrawledAt) : "대기 중"}
                       </p>
@@ -214,31 +311,42 @@ export function DashboardClient({ data }: { data: DashboardData }) {
               })}
             </div>
 
-            <SectionHeader icon={Package} title="위시리스트" href="/collections" cta="관리" />
-            <div className="panel overflow-hidden">
+            {/* Cargo Bay Wishlist */}
+            <SectionHeader
+              icon={Package}
+              title="카고 베이 위시리스트"
+              code="CARGO MANIFEST"
+              href="/collections"
+              cta="관리"
+            />
+            <div className="panel divide-y divide-[var(--border)] overflow-hidden">
               {wishlist.map((item) => {
                 const franchise = franchiseById.get(item.franchiseId ?? "");
                 return (
-                  <div key={item.id} className="flex items-center gap-3 border-b px-4 py-3 last:border-b-0">
+                  <div key={item.id} className="flex items-center gap-3 p-3 transition hover:bg-muted/40">
                     <div
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border"
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border font-sf text-xs font-bold"
                       style={{
                         backgroundColor: colorMix(franchise?.colorCode),
-                        borderColor: colorMix(franchise?.colorCode, 0.25),
+                        borderColor: colorMix(franchise?.colorCode, 0.35),
                         color: franchise?.colorCode ?? "var(--accent)",
                       }}
                     >
                       <Package className="h-4 w-4" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-xs font-semibold">{item.itemName}</p>
-                      <p className="text-[11px] text-[var(--text-3)]">{franchise?.name ?? "미분류"}</p>
+                      <p className="truncate text-xs font-bold text-foreground">{item.itemName}</p>
+                      <p className="font-sf text-[10px] text-[var(--text-3)]">{franchise?.name ?? "미분류"}</p>
                     </div>
-                    <span className="text-xs font-semibold">{formatKRW(item.price)}</span>
+                    <span className="font-mono text-xs font-bold text-[var(--accent-text)]">
+                      {formatKRW(item.price)}
+                    </span>
                   </div>
                 );
               })}
-              {wishlist.length === 0 && <EmptyPanel icon={Star} title="위시리스트가 비어 있습니다" />}
+              {wishlist.length === 0 && (
+                <EmptyPanel icon={Star} title="위시리스트가 비어 있습니다" />
+              )}
             </div>
           </aside>
         </section>
@@ -259,7 +367,11 @@ export function PageTop({
   return (
     <header className="flex flex-col gap-3 px-4 pb-4 pt-16 sm:px-7 sm:pt-6 lg:flex-row lg:items-start lg:justify-between">
       <div className="min-w-0">
-        <h1 className="text-xl font-bold tracking-tight">{title}</h1>
+        <div className="flex items-center gap-2 font-sf text-[10px] font-extrabold tracking-widest text-[var(--hologram)] uppercase">
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--hologram)] shadow-[0_0_6px_var(--cyan-glow)]" />
+          ASTRAL EXPRESS // NAVIGATION LOG
+        </div>
+        <h1 className="mt-0.5 text-xl font-extrabold tracking-tight text-foreground sm:text-2xl">{title}</h1>
         <p className="mt-1 max-w-3xl text-xs leading-5 text-[var(--text-3)]">{description}</p>
       </div>
       {action && <div className="w-full shrink-0 lg:w-auto">{action}</div>}
@@ -269,18 +381,18 @@ export function PageTop({
 
 function PipelineMini({ posts, extracted, pending }: { posts: number; extracted: number; pending: number }) {
   const stages = [
-    { label: "수집", value: `${posts} 게시글` },
-    { label: "추출", value: `${extracted} 일정` },
+    { label: "게시글 스캔", value: `${posts}건` },
+    { label: "신호 추출", value: `${extracted}건` },
     { label: "검수 대기", value: `${pending}건` },
   ];
   return (
-    <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-[var(--text-3)]">
+    <div className="mt-3 flex flex-wrap items-center gap-2 font-mono text-[11px] text-[var(--text-3)]">
       {stages.map((stage, index) => (
         <span key={stage.label} className="inline-flex items-center gap-2">
           <span>
-            <strong className="text-[var(--accent-text)]">{stage.value}</strong> {stage.label}
+            <strong className="font-bold text-[var(--accent-text)]">{stage.value}</strong> {stage.label}
           </span>
-          {index < stages.length - 1 && <ArrowRight className="h-3 w-3" />}
+          {index < stages.length - 1 && <ArrowRight className="h-3 w-3 text-[var(--border-strong)]" />}
         </span>
       ))}
     </div>
@@ -290,28 +402,31 @@ function PipelineMini({ posts, extracted, pending }: { posts: number; extracted:
 function MetricCard({
   icon: Icon,
   label,
+  code,
   value,
   tone,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
+  code: string;
   value: string;
   tone: "success" | "warn" | "neutral";
 }) {
   const toneClass =
     tone === "success"
-      ? "bg-[var(--success-bg)] text-[var(--success-text)]"
+      ? "bg-[var(--success-bg)] text-[var(--success-text)] border-[var(--success)]/30"
       : tone === "warn"
-        ? "bg-[var(--warn-bg)] text-[var(--warn-text)]"
-        : "bg-muted text-[var(--text-2)]";
+        ? "bg-[var(--warn-bg)] text-[var(--warn-text)] border-[var(--warn)]/30"
+        : "bg-secondary text-[var(--hologram)] border-[var(--border)]";
   return (
-    <div className="panel flex items-center gap-3 p-3">
-      <div className={`flex h-8 w-8 items-center justify-center rounded-md ${toneClass}`}>
-        <Icon className="h-4 w-4" />
+    <div className="panel flex items-center gap-3.5 p-3.5 transition-all hover:border-[var(--hologram)]">
+      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border shadow-sm ${toneClass}`}>
+        <Icon className="h-5 w-5" />
       </div>
-      <div>
-        <div className="text-lg font-bold leading-tight">{value}</div>
-        <div className="text-xs text-[var(--text-3)]">{label}</div>
+      <div className="min-w-0">
+        <div className="font-sf text-[9px] font-bold tracking-wider text-[var(--text-3)] uppercase">{code}</div>
+        <div className="font-mono text-xl font-extrabold leading-tight text-foreground">{value}</div>
+        <div className="text-xs text-[var(--text-2)]">{label}</div>
       </div>
     </div>
   );
@@ -320,12 +435,14 @@ function MetricCard({
 function SectionHeader({
   icon: Icon,
   title,
+  code,
   count,
   href,
   cta = "전체 보기",
 }: {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
+  code?: string;
   count?: number;
   href?: string;
   cta?: string;
@@ -333,12 +450,26 @@ function SectionHeader({
   return (
     <div className="flex items-center justify-between gap-3">
       <div className="flex items-center gap-2">
-        <Icon className="h-4 w-4 text-[var(--text-2)]" />
-        <span className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--text-2)]">{title}</span>
-        {typeof count === "number" && count > 0 && <Badge variant="secondary">{count}건</Badge>}
+        <Icon className="h-4 w-4 text-[var(--accent)]" />
+        <span className="font-sf text-xs font-extrabold uppercase tracking-wider text-foreground">
+          {title}
+        </span>
+        {code && (
+          <span className="hidden font-mono text-[9px] text-[var(--text-3)] sm:inline">
+            {"//"} {code}
+          </span>
+        )}
+        {typeof count === "number" && count > 0 && (
+          <Badge variant="default" className="font-mono text-[10px]">
+            {count}건
+          </Badge>
+        )}
       </div>
       {href && (
-        <Link href={href} className="inline-flex items-center gap-1 text-xs font-bold text-[var(--accent-text)]">
+        <Link
+          href={href}
+          className="inline-flex items-center gap-1 font-sf text-xs font-bold text-[var(--accent-text)] transition hover:text-[var(--accent-hover)]"
+        >
           {cta}
           <ArrowRight className="h-3 w-3" />
         </Link>
@@ -362,66 +493,82 @@ function SuggestionCard({
 }) {
   const percent = Math.round(suggestion.confidence * 100);
   return (
-    <article className="panel p-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+    <article className="panel relative overflow-hidden p-4 transition-all hover:border-[var(--hologram)]">
+      {/* Top Holographic Micro Rail */}
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] pb-2.5">
         <div className="flex flex-wrap items-center gap-2">
           <Badge
             variant="outline"
-            style={{ color: franchise?.colorCode, borderColor: colorMix(franchise?.colorCode, 0.3) }}
+            style={{ color: franchise?.colorCode, borderColor: colorMix(franchise?.colorCode, 0.4) }}
+            className="font-sf"
           >
-            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: franchise?.colorCode ?? "var(--accent)" }} />
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ backgroundColor: franchise?.colorCode ?? "var(--accent)" }}
+            />
             {franchise?.name ?? "미분류"}
           </Badge>
-          <Badge variant="secondary">
-            <Sparkles className="h-3 w-3" />
-            AI 제안
+          <Badge variant="secondary" className="font-sf">
+            <Sparkles className="h-3 w-3 text-[var(--hologram)]" />
+            AI SIGNAL
           </Badge>
-          <span className="text-xs text-[var(--text-3)]">{eventTypeLabels[suggestion.eventType]}</span>
+          <span className="font-sf text-xs font-semibold text-[var(--text-3)]">
+            {eventTypeLabels[suggestion.eventType]}
+          </span>
         </div>
         <a
           href={suggestion.sourceUrl}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-1 text-xs text-[var(--text-3)] hover:text-[var(--accent-text)]"
+          className="inline-flex items-center gap-1 font-mono text-xs text-[var(--text-3)] hover:text-[var(--hologram)]"
         >
-          출처
+          SOURCE
           <ExternalLink className="h-3 w-3" />
         </a>
       </div>
-      <h3 className="mt-3 text-sm font-bold leading-6">{suggestion.title}</h3>
-      <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-[var(--text-2)]">
-        <CalendarDays className="h-3.5 w-3.5 text-[var(--text-3)]" />
-        {formatDateRange(suggestion.startDate, suggestion.endDate)}
+
+      <h3 className="text-sm font-bold leading-6 text-foreground">{suggestion.title}</h3>
+
+      <div className="mt-1.5 flex flex-wrap items-center gap-3 font-mono text-xs text-[var(--text-2)]">
+        <span className="flex items-center gap-1.5">
+          <CalendarDays className="h-3.5 w-3.5 text-[var(--hologram)]" />
+          {formatDateRange(suggestion.startDate, suggestion.endDate)}
+        </span>
         {suggestion.location && <span>· {suggestion.location}</span>}
-        <span>· 신뢰도 {percent}%</span>
+        <span className="font-sf">· CONFIDENCE {percent}%</span>
       </div>
-      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
+
+      {/* Telemetry Progress Bar */}
+      <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
         <div
-          className="h-full rounded-full"
+          className="h-full rounded-full transition-all duration-300"
           style={{
             width: `${percent}%`,
-            backgroundColor: percent >= 90 ? "var(--success)" : percent >= 75 ? "var(--warn)" : "var(--accent)",
+            backgroundColor:
+              percent >= 90 ? "var(--success)" : percent >= 75 ? "var(--warn)" : "var(--accent)",
           }}
         />
       </div>
+
       {suggestion.warnings.length > 0 && (
-        <div className="mt-3 rounded-md border border-[color-mix(in_oklch,var(--warn)_30%,var(--border))] bg-[var(--warn-bg)] px-3 py-2 text-xs leading-5 text-[var(--warn-text)]">
+        <div className="mt-3 rounded-md border border-[var(--warn)]/30 bg-[var(--warn-bg)] px-3 py-2 text-xs leading-5 text-[var(--warn-text)]">
           {suggestion.warnings.join(" · ")}
         </div>
       )}
-      <div className="mt-3 flex flex-wrap items-center gap-2">
+
+      <div className="mt-3.5 flex flex-wrap items-center gap-2">
         <Button size="sm" onClick={onAccept} disabled={pending}>
-          <Check className="h-4 w-4" />
-          승인
+          <Check className="h-3.5 w-3.5" />
+          승인 · 스타차트 등록
         </Button>
         <Button size="sm" variant="outline" onClick={onIgnore} disabled={pending}>
-          <X className="h-4 w-4" />
+          <X className="h-3.5 w-3.5" />
           거절
         </Button>
         <Button size="sm" variant="ghost" asChild>
           <Link href="/discover">
-            <Clock className="h-4 w-4" />
-            편집 후 승인
+            <Clock className="h-3.5 w-3.5" />
+            검수 콘솔에서 편집
           </Link>
         </Button>
       </div>
@@ -429,11 +576,22 @@ function SuggestionCard({
   );
 }
 
-function EmptyPanel({ icon: Icon, title }: { icon: React.ComponentType<{ className?: string }>; title: string }) {
+function EmptyPanel({
+  icon: Icon,
+  title,
+  detail,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  detail?: string;
+}) {
   return (
     <div className="panel flex flex-col items-center justify-center px-4 py-10 text-center">
-      <Icon className="h-8 w-8 text-[var(--text-3)]" />
-      <p className="mt-3 text-sm font-semibold text-[var(--text-2)]">{title}</p>
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[var(--border)] bg-muted/50 text-[var(--accent)] shadow-sm">
+        <Icon className="h-6 w-6" />
+      </div>
+      <p className="mt-3 font-sf text-sm font-bold text-foreground">{title}</p>
+      {detail && <p className="mt-1 text-xs text-[var(--text-3)]">{detail}</p>}
     </div>
   );
 }
@@ -452,7 +610,7 @@ function formatKRW(value: number) {
   return `${value.toLocaleString("ko-KR")}원`;
 }
 
-function colorMix(color?: string, opacity = 0.12) {
+function colorMix(color?: string, opacity = 0.14) {
   if (!color) return `color-mix(in oklch, var(--accent) ${Math.round(opacity * 100)}%, transparent)`;
   return `${color}${Math.round(opacity * 255).toString(16).padStart(2, "0")}`;
 }
